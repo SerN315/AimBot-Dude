@@ -8,11 +8,12 @@ public class JoystickMove : MonoBehaviour
     public Joystick movementJoystick;
     public Button jumpButton;
     private bool isGrounded;
+    private Animator anim;
 
     void Start()
     {
         body = GetComponent<Rigidbody2D>();
-
+        anim = GetComponent<Animator>();
         // Ensure the button is found
         if (jumpButton != null)
         {
@@ -29,14 +30,53 @@ public class JoystickMove : MonoBehaviour
     {
         float movementInputX = movementJoystick.Direction.x;
 
-        if (movementInputX < -0.01f)
+        // Find the nearest enemy
+        GameObject nearestEnemy = FindNearestEnemy();
+        Vector3 enemyDirection = Vector3.zero;
+
+        if (nearestEnemy != null && isGrounded)
         {
-            transform.localScale = new Vector3(-1, 1, 1);
+            // Calculate the direction to the nearest enemy
+            enemyDirection = nearestEnemy.transform.position - transform.position;
+            enemyDirection.Normalize();
+
+            // Rotate the character to face the nearest enemy
+            float angle = Mathf.Atan2(enemyDirection.y, enemyDirection.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
         }
-        else if (movementInputX > 0.01f)
+
+        // Determine movement direction based on user input
+        Vector3 movementDirection = new Vector3(movementInputX, 0, 0).normalized;
+
+        if (movementInputX < -0.01f && nearestEnemy == null)
         {
-            transform.localScale = Vector3.one;
+
+            transform.rotation = Quaternion.Euler(0, 180, 0);
+            transform.localScale = new Vector3(5, 5, -1);
         }
+        else if (movementInputX > 0.01f && nearestEnemy == null)
+        {
+
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+            transform.localScale = new Vector3(5, 5, 1);
+
+        }
+            // If moving opposite to the enemy, move backward
+        bool isOppositeDirection = Vector3.Dot(movementDirection, enemyDirection) < 0;
+        if (isOppositeDirection)
+        {
+            movementDirection *= -1;
+        }
+
+        if (Mathf.Abs(movementDirection.x) > 0 && body.velocity.y == 0)
+        {
+            anim.SetBool("Run", true);
+        }
+        else
+        {
+            anim.SetBool("Run", false);
+        }
+
 
         body.velocity = new Vector2(movementInputX * speed * Time.deltaTime, body.velocity.y);
     }
@@ -48,6 +88,8 @@ public class JoystickMove : MonoBehaviour
         {
             body.velocity = new Vector2(body.velocity.x, jumpForce);
         }
+ 
+        
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -55,6 +97,7 @@ public class JoystickMove : MonoBehaviour
         if (collision.gameObject != gameObject) // Ensure the player doesn't collide with itself
         {
             isGrounded = true;
+            anim.SetBool("Jump", false);
         }
     }
 
@@ -63,7 +106,26 @@ public class JoystickMove : MonoBehaviour
         if (collision.gameObject != gameObject) // Ensure the player doesn't collide with itself
         {
             isGrounded = false;
+            anim.SetBool("Jump", true);
         }
+    }
+    GameObject FindNearestEnemy()
+    {
+        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+        GameObject nearestEnemy = null;
+        float minDistance = Mathf.Infinity;
+
+        foreach (GameObject enemy in enemies)
+        {
+            float distance = Vector3.Distance(transform.position, enemy.transform.position);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                nearestEnemy = enemy;
+            }
+        }
+
+        return nearestEnemy;
     }
 }
     
