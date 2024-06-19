@@ -9,6 +9,7 @@ public class JoystickMove : MonoBehaviour
     public Button jumpButton;
     private bool isGrounded;
     private Animator anim;
+    public Transform gunHand;
 
     void Start()
     {
@@ -36,13 +37,21 @@ public class JoystickMove : MonoBehaviour
 
         if (nearestEnemy != null && isGrounded)
         {
-            // Calculate the direction to the nearest enemy
+            // Calculate the direction to the nearest enemy, ignoring the vertical component
             enemyDirection = nearestEnemy.transform.position - transform.position;
+            enemyDirection.y = 0; // Ignore the vertical component
             enemyDirection.Normalize();
 
             // Rotate the character to face the nearest enemy
-            float angle = Mathf.Atan2(enemyDirection.y, enemyDirection.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(0, 0, angle);
+            float angle = Mathf.Atan2(enemyDirection.z, enemyDirection.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, angle, 0);
+            if (enemyDirection.x > 0)
+            {
+                gunHand.transform.localScale = new Vector3(1, 1, 1);
+            }
+            else if (enemyDirection.x < 0) {
+                gunHand.transform.localScale = new Vector3(1, -1, 1);
+            }
         }
 
         // Determine movement direction based on user input
@@ -53,12 +62,15 @@ public class JoystickMove : MonoBehaviour
 
             transform.rotation = Quaternion.Euler(0, 180, 0);
             transform.localScale = new Vector3(5, 5, -1);
+            
+
         }
         else if (movementInputX > 0.01f && nearestEnemy == null)
         {
 
             transform.rotation = Quaternion.Euler(0, 0, 0);
             transform.localScale = new Vector3(5, 5, 1);
+
 
         }
             // If moving opposite to the enemy, move backward
@@ -68,7 +80,7 @@ public class JoystickMove : MonoBehaviour
             movementDirection *= -1;
         }
 
-        if (Mathf.Abs(movementDirection.x) > 0 && body.velocity.y == 0)
+        if (Mathf.Abs(movementDirection.x) > 0 && isGrounded)
         {
             anim.SetBool("Run", true);
         }

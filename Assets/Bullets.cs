@@ -28,7 +28,7 @@ public class Bullets : MonoBehaviour
     // Update is called once per frame
     void OnTriggerEnter2D(Collider2D hitInfo)
     {
-        Debug.Log(hitInfo.name);
+        Debug.Log(hitInfo.tag);
         Enemy basic = hitInfo.GetComponent<Enemy>();
         if (basic != null)
         {
