@@ -179,11 +179,12 @@ GameObject:
   - component: {fileID: 305320695}
   - component: {fileID: 305320692}
   - component: {fileID: 305320694}
+  - component: {fileID: 305320699}
   - component: {fileID: 305320693}
   - component: {fileID: 305320696}
   - component: {fileID: 305320697}
   - component: {fileID: 305320698}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -387,6 +388,19 @@ MonoBehaviour:
   fireRate: 0
   firePoint: {fileID: 1874979695}
   BulletPrefab: {fileID: 7680860633129434427, guid: a4cb526851f6e9d4a8996d83d9271cb2, type: 3}
+--- !u!114 &305320699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305320691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa80242eaae60324195c0f4b76f9858f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 100
 --- !u!1 &323279015
 GameObject:
   m_ObjectHideFlags: 0
@@ -526,6 +540,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   followSpeed: 2
   yOffSet: 1
+  xOffSet: -5
   target: {fileID: 305320695}
 --- !u!1 &618067586
 GameObject:
@@ -537,7 +552,7 @@ GameObject:
   m_Component:
   - component: {fileID: 618067587}
   - component: {fileID: 618067588}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -915,9 +930,10 @@ GameObject:
   - component: {fileID: 1428357028}
   - component: {fileID: 1428357027}
   - component: {fileID: 1428357026}
-  - component: {fileID: 1428357030}
   - component: {fileID: 1428357025}
+  - component: {fileID: 1428357030}
   - component: {fileID: 1428357029}
+  - component: {fileID: 1428357031}
   m_Layer: 0
   m_Name: Basic
   m_TagString: Enemy
@@ -1058,7 +1074,7 @@ Transform:
   m_GameObject: {fileID: 1428357024}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.77, y: -3.39, z: 0.6290295}
+  m_LocalPosition: {x: 6.34, y: -3.31, z: 0.6290295}
   m_LocalScale: {x: -5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1098,9 +1114,45 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 100
-  pointA: {fileID: 2008710081}
-  pointB: {fileID: 1920025761}
+  pointA: {fileID: 2008710082}
+  pointB: {fileID: 1920025762}
   speed: 10
+  detectionRadius: 1
+--- !u!70 &1428357031
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1428357024}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.00617371, y: -0.024690606}
+  m_Size: {x: 0.73130375, y: 0.28280264}
+  m_Direction: 1
 --- !u!1 &1503639818
 GameObject:
   m_ObjectHideFlags: 0
@@ -1111,7 +1163,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1503639819}
   - component: {fileID: 1503639820}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: groundCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1187,7 +1239,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1874979695}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: gunpoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1234,7 +1286,7 @@ Transform:
   m_GameObject: {fileID: 1920025761}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.6, y: -2.95, z: -0.056737553}
+  m_LocalPosition: {x: 13.51, y: -2.16, z: -0.056737553}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1250,7 +1302,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1951922859}
   - component: {fileID: 1951922860}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Gunholding Hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1350,7 +1402,7 @@ Transform:
   m_GameObject: {fileID: 2008710081}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.06, y: -2.84, z: -0.056737553}
+  m_LocalPosition: {x: 2.97, y: -2.15, z: -0.056737553}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
