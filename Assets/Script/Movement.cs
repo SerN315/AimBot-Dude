@@ -106,7 +106,7 @@ public class JoystickMove : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject != gameObject) // Ensure the player doesn't collide with itself
+        if (collision.gameObject != gameObject && collision.gameObject.layer != LayerMask.NameToLayer("playerZone")&& collision.gameObject.layer != LayerMask.NameToLayer("Enemy") ) // Ensure the player doesn't collide with itself
         {
             isGrounded = true;
             anim.SetBool("Jump", false);
@@ -115,7 +115,7 @@ public class JoystickMove : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject != gameObject) // Ensure the player doesn't collide with itself
+        if (collision.gameObject != gameObject && collision.gameObject.layer != LayerMask.NameToLayer("playerZone")&& collision.gameObject.layer != LayerMask.NameToLayer("Enemy")) // Ensure the player doesn't collide with itself
         {
             isGrounded = false;
             anim.SetBool("Jump", true);

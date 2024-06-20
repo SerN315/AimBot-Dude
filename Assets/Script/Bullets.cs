@@ -1,5 +1,5 @@
 
-using System.Threading;
+
 using UnityEngine;
 
 public class Bullets : MonoBehaviour
@@ -29,12 +29,18 @@ public class Bullets : MonoBehaviour
     void OnTriggerEnter2D(Collider2D hitInfo)
     {
         Debug.Log(hitInfo.tag);
-        Enemy basic = hitInfo.GetComponent<Enemy>();
-        if (basic != null)
+        if (hitInfo.gameObject.layer == LayerMask.NameToLayer("Enemy")) 
         {
-            basic.TakeDamage(50);
+            Enemy enemy = hitInfo.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(20);
+                Destroy(gameObject);
+            }
         }
-        Destroy(gameObject);
-        hit = true;
-    }
+        else {
+            Destroy(gameObject);
+        }
+
+}
 }
