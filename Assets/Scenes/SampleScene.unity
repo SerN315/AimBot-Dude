@@ -133,7 +133,7 @@ GameObject:
   m_Component:
   - component: {fileID: 289027540}
   - component: {fileID: 289027539}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -387,7 +387,7 @@ MonoBehaviour:
   gunHand: {fileID: 1951922859}
   fireRate: 0
   firePoint: {fileID: 1874979695}
-  BulletPrefab: {fileID: 7680860633129434427, guid: a4cb526851f6e9d4a8996d83d9271cb2, type: 3}
+  BulletPrefab: {fileID: 853327775764673990, guid: 21dcad66293dafb44a47d9abc5cf02b3, type: 3}
 --- !u!114 &305320699
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -929,7 +929,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1194427596}
   - component: {fileID: 1194427597}
-  m_Layer: 0
+  - component: {fileID: 1194427598}
+  m_Layer: 7
   m_Name: detectZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -980,7 +981,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: -0.041484598}
@@ -996,6 +997,18 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 0.23945063}
   m_EdgeRadius: 0
+--- !u!114 &1194427598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1194427595}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c6d261c178f99f4a91349fc3ed2e84d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1428357024
 GameObject:
   m_ObjectHideFlags: 0
@@ -1010,7 +1023,7 @@ GameObject:
   - component: {fileID: 1428357025}
   - component: {fileID: 1428357030}
   - component: {fileID: 1428357029}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Basic
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -1284,7 +1297,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1521606828}
   - component: {fileID: 1521606829}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: shieldHitBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1313,7 +1326,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1521606827}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -1351,7 +1364,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1750091626}
   - component: {fileID: 1750091627}
-  m_Layer: 0
+  - component: {fileID: 1750091628}
+  m_Layer: 7
   m_Name: hitBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1380,7 +1394,7 @@ CapsuleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1750091625}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -1402,12 +1416,24 @@ CapsuleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.0000000028849285, y: -0.024200538}
-  m_Size: {x: 1.0000002, y: 0.28785512}
+  m_Offset: {x: -0.0000000049454942, y: -0.041485816}
+  m_Size: {x: 1.0000004, y: 0.25328487}
   m_Direction: 1
+--- !u!114 &1750091628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1750091625}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ff5b56c7291e42d4888122a58cb52725, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1874979694
 GameObject:
   m_ObjectHideFlags: 0
@@ -1734,7 +1760,7 @@ GameObject:
   - component: {fileID: 2118609016}
   - component: {fileID: 2118609015}
   - component: {fileID: 2118609014}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
