@@ -5,15 +5,17 @@ public class ShieldEnemy : MonoBehaviour
 {
     private Rigidbody2D rb;
     private Animator anim;
-    private CircleCollider2D shieldhitboxCollider;
-    private Vector2 originalVelocity; // To store the original velocity of the enemy
-
+    private CapsuleCollider2D shieldhitboxCollider;
+    public bool isShieldActive = false;
+    private bool hasPlayedPreShieldAnimation = false;
+    private bool isCooldownActive = false;
+    private float cooldownDuration = 2f; // Cooldown duration in seconds
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        shieldhitboxCollider = GetComponentInChildren<CircleCollider2D>();
+        shieldhitboxCollider = GetComponentInChildren<CapsuleCollider2D>();
 
         // Ensure the shield hitbox is initially disabled
         if (shieldhitboxCollider != null)
@@ -26,51 +28,81 @@ public class ShieldEnemy : MonoBehaviour
 
     public void CreateShield()
     {
-        if (!anim.GetBool("shield")) // Check if the shield is not already active
+        if (!isShieldActive && !anim.GetBool("shield") && !isCooldownActive) // Check if shield is not active and cooldown is not active
         {
             Debug.Log("Creating shield...");
-            anim.SetBool("run", false);
-            anim.SetBool("shield", true);
-            StartCoroutine(ActivateShieldForDuration(1.5f)); // 1.5 seconds duration
+
+            // Play pre-shield animation if it hasn't been played yet
+            if (!hasPlayedPreShieldAnimation)
+            {
+                StartCoroutine(PlayPreShieldAnimationAndCreateShield());
+            }
+            else
+            {
+                // If pre-shield animation already played, proceed to create shield
+                CreateShieldAfterAnimation();
+            }
         }
         else
         {
-            Debug.Log("Shield is already active.");
+            shieldhitboxCollider.enabled = false;
         }
     }
 
-    private IEnumerator ActivateShieldForDuration(float duration)
+    private IEnumerator PlayPreShieldAnimationAndCreateShield()
     {
-        // Store the original velocity and stop the enemy
-        originalVelocity = rb.velocity;
-        rb.velocity = Vector2.zero;
-        rb.isKinematic = true; // Disable physics interactions
-        Debug.Log("Shield activated. Enemy stopped.");
+        // Play your pre-shield animation here
+        anim.SetBool("shield_start", true);
+        hasPlayedPreShieldAnimation = true;
 
-        // Enable the shield hitbox
-        if (shieldhitboxCollider != null)
-        {
-            shieldhitboxCollider.enabled = true;
-        }
+        // Wait for the pre-shield animation to finish (adjust duration as needed)
+        yield return new WaitForSeconds(1.5f); // Adjust duration according to your animation length
 
-        // Wait for the specified duration
-        yield return new WaitForSeconds(duration);
+        // After animation, create shield
+        CreateShieldAfterAnimation();
+    }
 
-        // Set the shield animation parameter to false
+    private void CreateShieldAfterAnimation()
+    {
+        // Set pre-shield animation to false
+        anim.SetBool("shield_start", false);
+
+        // Activate shield
+        anim.SetBool("run", false); // Assuming run animation should be false during shield activation
+        anim.SetBool("shield", true);
+        shieldhitboxCollider.enabled = true;
+        isShieldActive = true;
+
+        // Start coroutine to deactivate shield after duration
+        StartCoroutine(DeactivateShieldAfterDuration(10f)); // 10 seconds duration
+    }
+
+    private IEnumerator DeactivateShieldAfterDuration(float duration)
+    {
+        yield return new WaitForSeconds(duration); // Wait for the specified duration
+
+        // Deactivate shield
         anim.SetBool("shield", false);
+        shieldhitboxCollider.enabled = false;
         Debug.Log("Shield deactivated.");
+        isShieldActive = false;
 
-        // Disable the shield hitbox
-        if (shieldhitboxCollider != null)
-        {
-            shieldhitboxCollider.enabled = false;
-        }
-
-        // Restore the original velocity and resume physics interactions
-        rb.isKinematic = false;
-        rb.velocity = originalVelocity;
-        Debug.Log("Enemy resumed movement.");
-
+        // Start cooldown
+        StartCoroutine(StartCooldown(cooldownDuration));
+        
+        // Wait for 3 seconds before setting run animation to true
+        yield return new WaitForSeconds(0.3f);
         anim.SetBool("run", true);
+    }
+
+    private IEnumerator StartCooldown(float cooldown)
+    {
+        isCooldownActive = true;
+        Debug.Log("Shield cooldown started. Duration: " + cooldown + " seconds.");
+
+        yield return new WaitForSeconds(cooldown);
+
+        Debug.Log("Shield cooldown ended.");
+        isCooldownActive = false;
     }
 }

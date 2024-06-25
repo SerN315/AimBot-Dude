@@ -180,10 +180,10 @@ GameObject:
   - component: {fileID: 305320692}
   - component: {fileID: 305320694}
   - component: {fileID: 305320699}
+  - component: {fileID: 305320700}
   - component: {fileID: 305320693}
   - component: {fileID: 305320696}
   - component: {fileID: 305320697}
-  - component: {fileID: 305320698}
   m_Layer: 6
   m_Name: player
   m_TagString: Player
@@ -371,7 +371,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &305320698
+--- !u!114 &305320699
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305320691}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa80242eaae60324195c0f4b76f9858f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: 50
+--- !u!114 &305320700
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -388,19 +401,6 @@ MonoBehaviour:
   fireRate: 0
   firePoint: {fileID: 1874979695}
   BulletPrefab: {fileID: 853327775764673990, guid: 21dcad66293dafb44a47d9abc5cf02b3, type: 3}
---- !u!114 &305320699
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 305320691}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa80242eaae60324195c0f4b76f9858f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  health: 100
 --- !u!1 &323279015
 GameObject:
   m_ObjectHideFlags: 0
@@ -1009,6 +1009,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c6d261c178f99f4a91349fc3ed2e84d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  delayTime: 1.2
 --- !u!1 &1428357024
 GameObject:
   m_ObjectHideFlags: 0
@@ -1022,6 +1023,7 @@ GameObject:
   - component: {fileID: 1428357026}
   - component: {fileID: 1428357025}
   - component: {fileID: 1428357030}
+  - component: {fileID: 1428357031}
   - component: {fileID: 1428357029}
   m_Layer: 8
   m_Name: Basic
@@ -1083,7 +1085,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1428357024}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -1205,11 +1207,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ee2bd7eced0ded46838f1bf5b09ee33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 100
+  health: 70
   pointA: {fileID: 2008710082}
   pointB: {fileID: 1920025762}
+  boolParameterName: run
+  decelerationRate: 7
   speed: 10
-  detectionRadius: 1
+--- !u!114 &1428357031
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1428357024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: becacde6a0ac81d419064acb9923b68d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isShieldActive: 0
 --- !u!1 &1503639818
 GameObject:
   m_ObjectHideFlags: 0
@@ -1297,7 +1313,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1521606828}
   - component: {fileID: 1521606829}
-  m_Layer: 8
+  m_Layer: 7
   m_Name: shieldHitBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1319,14 +1335,14 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1428357028}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &1521606829
-CircleCollider2D:
+--- !u!70 &1521606829
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1521606827}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
@@ -1351,9 +1367,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.20915107}
-  serializedVersion: 2
-  m_Radius: 0.2908489
+  m_Offset: {x: -0.016719563, y: -0.24874626}
+  m_Size: {x: 0.6034104, y: 0.53754157}
+  m_Direction: 1
 --- !u!1 &1750091625
 GameObject:
   m_ObjectHideFlags: 0

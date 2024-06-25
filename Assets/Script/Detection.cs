@@ -6,7 +6,7 @@ public class Detection : MonoBehaviour
 {
     private Animator anim;
     private Enemy enemy;
-
+    public float delayTime = 0.3f;
    private CapsuleCollider2D hitboxCollider;
    private BoxCollider2D detectionCollider;
     private bool playerInRange = false;
@@ -46,7 +46,7 @@ void OnTriggerExit2D(Collider2D other)
 IEnumerator DisableAttackAnimationAfterDelay()
 {
     Debug.Log("Starting disable animation coroutine");
-    yield return new WaitForSeconds(1f); // Adjust delay as needed
+    yield return new WaitForSeconds(delayTime); // Adjust delay as needed
 
     if (!playerInRange)
     {

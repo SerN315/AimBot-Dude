@@ -9,10 +9,12 @@ public class Enemy : MonoBehaviour
     private Rigidbody2D rb;
     private Animator anim;
     private Transform currentPoint;
+    public string boolParameterName = "run";
+    public float decelerationRate = 2f;
     public float speed;
     private BoxCollider2D hitboxCollider;
     private ShieldEnemy shieldEnemy;
-    public float detectionRadius = 1.0f;  // Radius of the gizmo circle around the enemy
+    
 
 
 
@@ -30,6 +32,8 @@ public class Enemy : MonoBehaviour
 
     void FixedUpdate()
     {
+        bool isRunning = anim.GetBool(boolParameterName);
+        if(isRunning && !anim.GetBool("shield")){
         Vector2 direction = (currentPoint.position - transform.position).normalized;
         rb.velocity = direction * speed;
 
@@ -39,6 +43,12 @@ public class Enemy : MonoBehaviour
         {
             // Switch to the other point when close enough
             currentPoint = (currentPoint == pointA) ? pointB : pointA;
+        }
+        }
+        else {
+                // Gradually slow down the rb.velocity to zero
+
+                rb.velocity = Vector2.Lerp(rb.velocity, Vector2.zero, Time.deltaTime * decelerationRate);
         }
     }
 
@@ -63,10 +73,15 @@ public class Enemy : MonoBehaviour
     }
     public void TakeDamage(int damage)
     {
-
+        if (anim.GetBool("shield"))
+        {
+            // If shield is active, take no damage
+            Debug.Log("Shield is active. No damage taken.");
+            return;
+        }
         health -= damage;
         Debug.Log("Enemy took damage: " + damage + ", current health: " + health);
-        if (health < 50 && health > 0)
+        if (health < 50 && health > 0 && !shieldEnemy.isShieldActive)
         {
             shieldEnemy.CreateShield();
         }

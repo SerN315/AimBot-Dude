@@ -4,7 +4,7 @@ using UnityEngine;
 public class Hitbox : MonoBehaviour
 {
     private Enemy enemy;
-
+    private bool hasHitPlayer = false;
     private Animator anim;
 
    private CapsuleCollider2D hitboxCollider;
@@ -15,9 +15,9 @@ public class Hitbox : MonoBehaviour
 
     }
 
-    void OnTriggerStay2D(Collider2D other)
+    void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && !hasHitPlayer)
         {
             Debug.Log("Player in hitbox range");
             // anim.SetBool("attack", true);
@@ -25,6 +25,7 @@ public class Hitbox : MonoBehaviour
             if (playerStats != null)
             {
                 playerStats.TakeDamage(5); // Example: Player takes 5 damage per second in hitbox range
+                hasHitPlayer = true; // Set flag to true to prevent further hits
             }
         }
     }
@@ -35,6 +36,7 @@ public class Hitbox : MonoBehaviour
         {
             Debug.Log("Player left hitbox range");
             // anim.SetBool("attack", false);
+            hasHitPlayer = false;
         }
     }
 }
