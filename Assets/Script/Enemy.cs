@@ -1,135 +1,163 @@
-
 using UnityEngine;
+using System.Collections;
 
-public class Enemy : MonoBehaviour
+public abstract class Enemy : MonoBehaviour
 {
+    // Fields common to all enemies
     public int health = 100;
-    public Transform pointA;
-    public Transform pointB;
-    private Rigidbody2D rb;
-    private Animator anim;
-    private Transform currentPoint;
-    public string boolParameterName = "run";
+    public float speed = 5f;
+    public Transform[] patrolPoints;
     public float decelerationRate = 2f;
-    public float speed;
-    private BoxCollider2D hitboxCollider;
-    private ShieldEnemy shieldEnemy;
-    
+    public string runParameterName = "run";
 
+    // Protected fields for internal use
+    protected Rigidbody2D rb;
+    protected Animator anim;
+    protected Transform currentPatrolPoint;
+    protected bool isRunning = true;
+    protected bool isShieldActive = false;
+    protected bool isCooldownActive = false;
+    protected float cooldownDuration = 2f; // Cooldown duration in seconds
 
-
-    // Start is called before the first frame update
-   void Start()
+    protected virtual void Start()
     {
-        shieldEnemy = GetComponent<ShieldEnemy>();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        currentPoint = pointB; // Start with pointB to move towards pointA first
-        anim.SetBool("run", true);
-        // Find the hitbox collider in children (assuming it's a child of the enemy)
-        hitboxCollider = GetComponent<BoxCollider2D>();
+
+        // Start patrolling between the defined points
+        if (patrolPoints.Length >= 2)
+        {
+            currentPatrolPoint = patrolPoints[0];
+        }
+
+        anim.SetBool(runParameterName, true);
     }
 
-    void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
-        bool isRunning = anim.GetBool(boolParameterName);
-        if(isRunning && !anim.GetBool("shield")){
-        Vector2 direction = (currentPoint.position - transform.position).normalized;
+  if (isRunning && !isShieldActive && !anim.GetBool("attack") && !anim.GetBool("charge_start"))
+    {
+        MoveTowardsCurrentPatrolPoint();
+    }
+    else if (!anim.GetBool("attack") && !anim.GetBool("charge_start"))
+    {
+        DecelerateMovement();
+    }
+
+    // Synchronize movement during charging state for melee enemies
+    else if (anim.GetBool("charge_start") && !anim.GetBool("attack"))
+    {
+        DecelerateMovement();
+    }
+
+    // Add additional synchronization logic for other enemy types here
+    }
+
+    protected void MoveTowardsCurrentPatrolPoint()
+    {
+        Vector2 direction = (currentPatrolPoint.position - transform.position).normalized;
         rb.velocity = direction * speed;
+  // Update the rotation to face the direction of movement
+    if (direction != Vector2.zero)
+    {
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(new Vector3(0, angle + 180, 0));
+    }
+        float distance = Vector2.Distance(transform.position, currentPatrolPoint.position);
 
-        float distance = Vector2.Distance(transform.position, currentPoint.position);
-
-        if (distance < 0.5f)
+    if (distance < 0.5f)
         {
-            // Switch to the other point when close enough
-            currentPoint = (currentPoint == pointA) ? pointB : pointA;
-        }
-        }
-        else {
-                // Gradually slow down the rb.velocity to zero
-
-                rb.velocity = Vector2.Lerp(rb.velocity, Vector2.zero, Time.deltaTime * decelerationRate);
+            // Switch to the next patrol point when close enough
+            CyclePatrolPoints();
         }
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
+    protected void CyclePatrolPoints()
     {
-        if (collision.collider.CompareTag("Projectile")){
-            Debug.Log("Player touched the enemy");
-            Bullets bullets= collision.collider.GetComponent<Bullets>();
-            if (bullets != null){
-                Destroy(bullets);
-            }
-        }
-        if (collision.collider.CompareTag("Player"))
+        // Cycle to the next patrol point in the array
+        int currentIndex = System.Array.IndexOf(patrolPoints, currentPatrolPoint);
+        int nextIndex = (currentIndex + 1) % patrolPoints.Length;
+        currentPatrolPoint = patrolPoints[nextIndex];
+    }
+
+    protected void DecelerateMovement()
+    {
+        rb.velocity = Vector2.Lerp(rb.velocity, Vector2.zero, Time.deltaTime * decelerationRate);
+    }
+
+    protected virtual void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.collider.CompareTag("Projectile"))
         {
-            Debug.Log("Player touched the enemy");
-            PlayerStats playerStats = collision.collider.GetComponent<PlayerStats>();
-            if (playerStats != null)
-            {
-                playerStats.TakeDamage(0); // Example: Player takes 10 damage on collision
-            }
+            HandleProjectileCollision(collision);
+        }
+        else if (collision.collider.CompareTag("Player"))
+        {
+            HandlePlayerCollision(collision);
         }
     }
-    public void TakeDamage(int damage)
+
+    protected virtual void HandleProjectileCollision(Collision2D collision)
     {
-        if (anim.GetBool("shield"))
+        Debug.Log("Projectile touched the enemy");
+        Destroy(collision.gameObject); // Destroy the projectile
+
+        if (!isShieldActive)
+        {
+            TakeDamage(10); // Example: Enemy takes 10 damage on collision with projectile
+        }
+    }
+
+    protected virtual void HandlePlayerCollision(Collision2D collision)
+    {
+        Debug.Log("Player touched the enemy");
+        PlayerStats playerStats = collision.collider.GetComponent<PlayerStats>();
+
+        if (playerStats != null)
+        {
+            playerStats.TakeDamage(0); // Example: Player takes 0 damage (modify as needed)
+        }
+    }
+
+    public virtual void TakeDamage(int damage)
+    {
+        if (isShieldActive)
         {
             // If shield is active, take no damage
             Debug.Log("Shield is active. No damage taken.");
             return;
         }
+
         health -= damage;
         Debug.Log("Enemy took damage: " + damage + ", current health: " + health);
-        if (health < 50 && health > 0 && !shieldEnemy.isShieldActive)
+
+        if (health < 50 && health > 0 && !isShieldActive && !isCooldownActive)
         {
-            shieldEnemy.CreateShield();
+            StartCoroutine(ActivateShieldIfNeeded());
         }
+
         if (health <= 0)
         {
             Die();
         }
     }
 
-    void Die()
+    protected virtual IEnumerator ActivateShieldIfNeeded()
+    {
+        yield return null; // Placeholder return
+    }
+        protected virtual IEnumerator ChargeAttack()
+    {
+        yield return null; // Placeholder return
+    }
+
+    protected virtual void Die()
     {
         Destroy(gameObject);
     }
-    public void DetectPlayer(){
+        // Add abstract method for handling detection
+    public abstract void HandleDetection(Collider2D other);
 
-    }
-
-    public void AttackPlayer(){
-
-    }
-
-
-    // Draw gizmos to visualize points and the enemy
-    //void OnDrawGizmos()
-    //{
-    //    // Draw a sphere at the enemy's position
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawWireSphere(transform.position, detectionRadius);
-
-    //    // Draw lines between enemy and points
-    //    if (pointA != null && pointB != null)
-    //    {
-    //        Gizmos.color = Color.blue;
-    //        Gizmos.DrawLine(transform.position, pointA.position);
-    //        Gizmos.DrawLine(transform.position, pointB.position);
-    //    }
-
-    //    // Draw spheres at pointA and pointB positions
-    //    if (pointA != null)
-    //    {
-    //        Gizmos.color = Color.green;
-    //        Gizmos.DrawWireSphere(pointA.position, 0.3f);
-    //    }
-
-    //    if (pointB != null)
-    //    {
-    //        Gizmos.color = Color.green;
-    //        Gizmos.DrawWireSphere(pointB.position, 0.3f);
-    //    }
-    //}
+    // Add abstract method for handling detection exit
+    public abstract void HandleDetectionExit(Collider2D other);
 }
