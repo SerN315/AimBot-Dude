@@ -35,22 +35,23 @@ public class JoystickMove : MonoBehaviour
         GameObject nearestEnemy = FindNearestEnemy();
         Vector3 enemyDirection = Vector3.zero;
 
-        if (nearestEnemy != null && isGrounded)
+        if (nearestEnemy != null)
         {
-            // Calculate the direction to the nearest enemy, ignoring the vertical component
+                  // Calculate the direction to the nearest enemy, ignoring the vertical component
             enemyDirection = nearestEnemy.transform.position - transform.position;
             enemyDirection.y = 0; // Ignore the vertical component
             enemyDirection.Normalize();
 
-            // Rotate the character to face the nearest enemy
-            float angle = Mathf.Atan2(enemyDirection.z, enemyDirection.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(0, angle, 0);
+            // Flip the character to face the nearest enemy
             if (enemyDirection.x > 0)
             {
-                gunHand.transform.localScale = new Vector3(1, 1, 1);
+                transform.localScale = new Vector3(5, 5, 1);
+                gunHand.localScale = new Vector3(1, 1, 1);
             }
-            else if (enemyDirection.x < 0) {
-                gunHand.transform.localScale = new Vector3(1, -1, 1);
+            else if (enemyDirection.x < 0)
+            {
+                transform.localScale = new Vector3(-5, 5, 1);
+                gunHand.localScale = new Vector3(-1, 1, 1);
             }
         }
 
@@ -59,19 +60,11 @@ public class JoystickMove : MonoBehaviour
 
         if (movementInputX < -0.01f && nearestEnemy == null)
         {
-
-            transform.rotation = Quaternion.Euler(0, 180, 0);
-            transform.localScale = new Vector3(5, 5, -1);
-            
-
+            transform.localScale = new Vector3(-5, 5, 1);
         }
         else if (movementInputX > 0.01f && nearestEnemy == null)
         {
-
-            transform.rotation = Quaternion.Euler(0, 0, 0);
             transform.localScale = new Vector3(5, 5, 1);
-
-
         }
             // If moving opposite to the enemy, move backward
         bool isOppositeDirection = Vector3.Dot(movementDirection, enemyDirection) < 0;
@@ -106,7 +99,7 @@ public class JoystickMove : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject != gameObject && collision.gameObject.layer != LayerMask.NameToLayer("playerZone")&& collision.gameObject.layer != LayerMask.NameToLayer("Enemy") ) // Ensure the player doesn't collide with itself
+        if (collision.gameObject != gameObject && collision.gameObject.layer != LayerMask.NameToLayer("playerZone") && collision.gameObject.layer != LayerMask.NameToLayer("Enemy")) // Ensure the player doesn't collide with itself
         {
             isGrounded = true;
             anim.SetBool("Jump", false);
@@ -115,7 +108,7 @@ public class JoystickMove : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject != gameObject && collision.gameObject.layer != LayerMask.NameToLayer("playerZone")&& collision.gameObject.layer != LayerMask.NameToLayer("Enemy")) // Ensure the player doesn't collide with itself
+        if (collision.gameObject != gameObject && collision.gameObject.layer != LayerMask.NameToLayer("playerZone") && collision.gameObject.layer != LayerMask.NameToLayer("Enemy") ) // Ensure the player doesn't collide with itself
         {
             isGrounded = false;
             anim.SetBool("Jump", true);

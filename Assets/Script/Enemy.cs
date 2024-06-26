@@ -3,69 +3,90 @@ using System.Collections;
 
 public abstract class Enemy : MonoBehaviour
 {
-    // Fields common to all enemies
     public int health = 100;
     public float speed = 5f;
     public Transform[] patrolPoints;
     public float decelerationRate = 2f;
     public string runParameterName = "run";
+    public bool facesLeftByDefault = true;
+    public float patrolPointSpacing = 2f;
+    public int numberOfPatrolPoints = 3;
+    public LayerMask groundLayer;
+    public float ledgeCheckDistance = 1f;
 
-    // Protected fields for internal use
+    protected bool facingRight = true;
     protected Rigidbody2D rb;
     protected Animator anim;
     protected Transform currentPatrolPoint;
     protected bool isRunning = true;
     protected bool isShieldActive = false;
     protected bool isCooldownActive = false;
-    protected float cooldownDuration = 2f; // Cooldown duration in seconds
+    protected float cooldownDuration = 2f;
 
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
 
-        // Start patrolling between the defined points
-        if (patrolPoints.Length >= 2)
-        {
-            currentPatrolPoint = patrolPoints[0];
-        }
+        // Generate patrol points automatically
+        GeneratePatrolPoints();
 
         anim.SetBool(runParameterName, true);
     }
 
     protected virtual void FixedUpdate()
     {
-  if (isRunning && !isShieldActive && !anim.GetBool("attack") && !anim.GetBool("charge_start"))
-    {
-        MoveTowardsCurrentPatrolPoint();
-    }
-    else if (!anim.GetBool("attack") && !anim.GetBool("charge_start"))
-    {
-        DecelerateMovement();
-    }
-
-    // Synchronize movement during charging state for melee enemies
-    else if (anim.GetBool("charge_start") && !anim.GetBool("attack"))
-    {
-        DecelerateMovement();
-    }
-
-    // Add additional synchronization logic for other enemy types here
+        if (anim.GetBool("run") && !isShieldActive && !anim.GetBool("attack") && !anim.GetBool("charge") && !anim.GetBool("charge_start"))
+        {
+            MoveTowardsCurrentPatrolPoint();
+        }
+        else if (!anim.GetBool("run") && !isShieldActive && !anim.GetBool("attack") && !anim.GetBool("charge") && !anim.GetBool("charge_start"))
+        {
+            rb.velocity = Vector2.zero;
+        }
+        else
+        {
+            DecelerateMovement();
+        }
     }
 
-    protected void MoveTowardsCurrentPatrolPoint()
+    protected virtual void MoveTowardsCurrentPatrolPoint()
     {
+        if (currentPatrolPoint == null) return;
+
         Vector2 direction = (currentPatrolPoint.position - transform.position).normalized;
         rb.velocity = direction * speed;
-  // Update the rotation to face the direction of movement
-    if (direction != Vector2.zero)
-    {
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(new Vector3(0, angle + 180, 0));
-    }
+
+        // Update the rotation to face the direction of movement
+        if (direction != Vector2.zero)
+        {
+            if (facesLeftByDefault)
+            {
+                if (direction.x < 0)
+                {
+                    transform.localRotation = Quaternion.Euler(0, 0, 0); // Flip to face left
+                }
+                else
+                {
+                    transform.localRotation = Quaternion.Euler(0, 180, 0); // Face right
+                }
+            }
+            else if (!facesLeftByDefault)
+            {
+                if (direction.x < 0)
+                {
+                    transform.localRotation = Quaternion.Euler(0, 180, 0); // Flip to face left
+                }
+                else
+                {
+                    transform.localRotation = Quaternion.Euler(0, 0, 0); // Face right
+                }
+            }
+        }
+
         float distance = Vector2.Distance(transform.position, currentPatrolPoint.position);
 
-    if (distance < 0.5f)
+        if (distance < 0.5f)
         {
             // Switch to the next patrol point when close enough
             CyclePatrolPoints();
@@ -74,7 +95,6 @@ public abstract class Enemy : MonoBehaviour
 
     protected void CyclePatrolPoints()
     {
-        // Cycle to the next patrol point in the array
         int currentIndex = System.Array.IndexOf(patrolPoints, currentPatrolPoint);
         int nextIndex = (currentIndex + 1) % patrolPoints.Length;
         currentPatrolPoint = patrolPoints[nextIndex];
@@ -100,11 +120,11 @@ public abstract class Enemy : MonoBehaviour
     protected virtual void HandleProjectileCollision(Collision2D collision)
     {
         Debug.Log("Projectile touched the enemy");
-        Destroy(collision.gameObject); // Destroy the projectile
+        Destroy(collision.gameObject);
 
         if (!isShieldActive)
         {
-            TakeDamage(10); // Example: Enemy takes 10 damage on collision with projectile
+            TakeDamage(10); 
         }
     }
 
@@ -115,7 +135,7 @@ public abstract class Enemy : MonoBehaviour
 
         if (playerStats != null)
         {
-            playerStats.TakeDamage(0); // Example: Player takes 0 damage (modify as needed)
+            playerStats.TakeDamage(0); 
         }
     }
 
@@ -123,7 +143,6 @@ public abstract class Enemy : MonoBehaviour
     {
         if (isShieldActive)
         {
-            // If shield is active, take no damage
             Debug.Log("Shield is active. No damage taken.");
             return;
         }
@@ -144,20 +163,92 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual IEnumerator ActivateShieldIfNeeded()
     {
-        yield return null; // Placeholder return
+        yield return null; 
     }
-        protected virtual IEnumerator ChargeAttack()
+
+    protected virtual IEnumerator ChargeAttack()
     {
-        yield return null; // Placeholder return
+        yield return null; 
     }
 
     protected virtual void Die()
     {
         Destroy(gameObject);
     }
-        // Add abstract method for handling detection
+
     public abstract void HandleDetection(Collider2D other);
 
-    // Add abstract method for handling detection exit
     public abstract void HandleDetectionExit(Collider2D other);
+private void GeneratePatrolPoints()
+{
+    patrolPoints = new Transform[numberOfPatrolPoints];
+    Vector3 startPoint = transform.position;
+
+    // Get the bottom position of the enemy's collider
+    Collider2D collider = GetComponent<Collider2D>();
+    Vector3 bottomCenter = new Vector3(startPoint.x, startPoint.y - collider.bounds.extents.y, startPoint.z);
+
+    // Determine the spacing between patrol points
+    float effectiveSpacing = patrolPointSpacing;
+
+    // Check if the enemy is standing on ground or a platform
+    RaycastHit2D hit = Physics2D.Raycast(bottomCenter, Vector2.down, ledgeCheckDistance, groundLayer);
+    if (hit.collider != null)
+    {
+        // Calculate the length of the platform within the ground layer
+        float platformLength = CalculatePlatformLength(hit.point);
+
+        // Adjust spacing if it's longer than the platform length
+        if (platformLength < patrolPointSpacing)
+        {
+            effectiveSpacing = platformLength;
+        }
+    }
+
+    // Place patrol points at the calculated positions
+    Vector3 leftPatrolPoint = startPoint + new Vector3(-effectiveSpacing / 2f, collider.bounds.extents.y, 0);
+    Vector3 rightPatrolPoint = startPoint + new Vector3(effectiveSpacing / 2f, collider.bounds.extents.y, 0);
+
+    // Ensure the Y position matches the center of the enemy
+    leftPatrolPoint.y = transform.position.y;
+    rightPatrolPoint.y = transform.position.y;
+
+    // Create and assign positions to patrol points
+    patrolPoints[0] = new GameObject("PatrolPoint0").transform;
+    patrolPoints[0].position = leftPatrolPoint;
+
+    patrolPoints[1] = new GameObject("PatrolPoint1").transform;
+    patrolPoints[1].position = rightPatrolPoint;
+
+    if (patrolPoints.Length >= 2)
+    {
+        currentPatrolPoint = patrolPoints[0];
+    }
+}
+
+private float CalculatePlatformLength(Vector3 start)
+{
+    Vector2 start2D = new Vector2(start.x, start.y);
+    RaycastHit2D hitLeft = Physics2D.Raycast(start2D, Vector2.left, Mathf.Infinity, groundLayer);
+    RaycastHit2D hitRight = Physics2D.Raycast(start2D, Vector2.right, Mathf.Infinity, groundLayer);
+
+    float length = 0f;
+    if (hitLeft.collider != null)
+    {
+        length += Mathf.Abs(hitLeft.point.x - start2D.x);
+    }
+    if (hitRight.collider != null)
+    {
+        length += Mathf.Abs(hitRight.point.x - start2D.x);
+    }
+
+    return length;
+}
+
+private bool IsAboveGround(Vector3 position)
+{
+    RaycastHit2D hit = Physics2D.Raycast(position, Vector2.down, ledgeCheckDistance, groundLayer);
+    return hit.collider != null;
+}
+
 }

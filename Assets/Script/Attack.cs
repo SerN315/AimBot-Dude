@@ -1,4 +1,3 @@
-
 using UnityEngine;
 
 public class Attack : MonoBehaviour
@@ -8,13 +7,9 @@ public class Attack : MonoBehaviour
     public float fireRate;
     public Transform firePoint;
     public GameObject BulletPrefab;
-    // Start is called before the first frame update
 
-
-    // Update is called once per frame
     void Update()
     {
-
         GameObject nearestEnemy = FindNearestEnemy();
 
         // If an enemy is found, point the gunHoldingHand towards it
@@ -23,15 +18,26 @@ public class Attack : MonoBehaviour
             Vector3 direction = nearestEnemy.transform.position - gunHand.position;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             gunHand.rotation = Quaternion.Euler(0, 0, angle);
+            
+            // Flip gunHand if necessary
+            if (direction.x > 0)
+            {
+                gunHand.localScale = new Vector3(1, 1, 1);
+            }
+            else if (direction.x < 0)
+            {
+                gunHand.localScale = new Vector3(-1, -1, 1);
+            }
         }
+        
         fireRate += Time.deltaTime;
-        if (fireRate > 1.2 && nearestEnemy!= null)
+        if (fireRate > 1.2 && nearestEnemy != null)
         {
             Shoot();
             fireRate = 0;
         }
-
     }
+
     GameObject FindNearestEnemy()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
@@ -53,8 +59,6 @@ public class Attack : MonoBehaviour
 
     void Shoot()
     {
-        Instantiate(BulletPrefab, firePoint.position,firePoint.rotation);
+        Instantiate(BulletPrefab, firePoint.position, firePoint.rotation);
     }
-
-
 }

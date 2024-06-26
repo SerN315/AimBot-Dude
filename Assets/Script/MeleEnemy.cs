@@ -14,8 +14,6 @@ public class MeleeEnemy : Enemy
     protected IEnumerator ChargeAttack()
     {
         yield return StartCoroutine(PlayPreChargeAnimationAndCharge());
-        yield return new WaitForSeconds(0.5f); // Adjust duration according to your animation length
-        anim.SetBool("run", true);
     }
 
     private IEnumerator PlayPreChargeAnimationAndCharge()
@@ -29,6 +27,7 @@ public class MeleeEnemy : Enemy
     private void Charging()
     {
         anim.SetBool("charge_start", false);
+        anim.SetBool("charge",true);
         StartCoroutine(ChargingAttack(2f)); // 2 seconds duration
     }
 
@@ -36,7 +35,8 @@ public class MeleeEnemy : Enemy
     {
         yield return new WaitForSeconds(duration);
         anim.SetBool("attack", true);
-        yield return new WaitForSeconds(0.3f);
+        anim.SetBool("charge",false);
+        yield return new WaitForSeconds(0.6f);
         anim.SetBool("attack", false); // Resume running animation
 
     }
@@ -67,5 +67,7 @@ public class MeleeEnemy : Enemy
         yield return new WaitForSeconds(0.3f);
 
         anim.SetBool("attack", false);
+        yield return new WaitForSeconds(0.6f);
+        anim.SetBool("run", true);
     }
 }
