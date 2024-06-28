@@ -9,6 +9,7 @@ public abstract class Enemy : MonoBehaviour
     public float decelerationRate = 2f;
     public string runParameterName = "run";
     public bool facesLeftByDefault = true;
+    private GameManager gameManager;
     public float patrolPointSpacing = 2f;
     public int numberOfPatrolPoints = 3;
     public LayerMask groundLayer;
@@ -32,6 +33,7 @@ public abstract class Enemy : MonoBehaviour
         GeneratePatrolPoints();
 
         anim.SetBool(runParameterName, true);
+         gameManager = FindObjectOfType<GameManager>();
     }
 
     protected virtual void FixedUpdate()
@@ -158,6 +160,7 @@ public abstract class Enemy : MonoBehaviour
         if (health <= 0)
         {
             Die();
+            gameManager.EnemyDestroyed();
         }
     }
 
@@ -174,6 +177,7 @@ public abstract class Enemy : MonoBehaviour
     protected virtual void Die()
     {
         Destroy(gameObject);
+        
     }
 
     public abstract void HandleDetection(Collider2D other);

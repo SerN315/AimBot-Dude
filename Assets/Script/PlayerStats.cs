@@ -4,10 +4,11 @@ public class PlayerStats : MonoBehaviour
 {
     public int health = 100;
     private Rigidbody2D rb;
-
+    private GameManager gameManager;
     // Start is called before the first frame update
     void Start()
     {
+        gameManager = FindObjectOfType<GameManager>();
         rb = GetComponent<Rigidbody2D>();
     }
 
@@ -27,6 +28,7 @@ public class PlayerStats : MonoBehaviour
         {
             Debug.Log("Player health reached zero or below. Destroying player.");
             Destroy(gameObject);
+            gameManager.PlayerDied();
         }
     }
 }
