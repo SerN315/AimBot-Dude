@@ -7,14 +7,18 @@ public class JoystickMove : MonoBehaviour
     public float speed, jumpForce;
     public Joystick movementJoystick;
     public Button jumpButton;
-    private bool isGrounded;
+    public Vector2 boxSize;
+    public float castDistance;
+    public LayerMask groundLayer;
     private Animator anim;
+    public bool isWalled;
     public Transform gunHand;
 
     void Start()
     {
         body = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        
         // Ensure the button is found
         if (jumpButton != null)
         {
@@ -27,9 +31,28 @@ public class JoystickMove : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        anim.SetBool("Jump", !isGrounded());
+    }
+
     void FixedUpdate()
     {
         float movementInputX = movementJoystick.Direction.x;
+
+        // Check if there's a wall on the left or right
+        bool isWallOnLeft = IsWallOnDirection(Vector2.left);
+        bool isWallOnRight = IsWallOnDirection(Vector2.right);
+
+        // Adjust movement direction based on wall presence
+        if (isWallOnLeft && movementInputX < 0)
+        {
+            movementInputX = 0; // Disable left movement
+        }
+        else if (isWallOnRight && movementInputX > 0)
+        {
+            movementInputX = 0; // Disable right movement
+        }
 
         // Find the nearest enemy
         GameObject nearestEnemy = FindNearestEnemy();
@@ -37,7 +60,7 @@ public class JoystickMove : MonoBehaviour
 
         if (nearestEnemy != null)
         {
-                  // Calculate the direction to the nearest enemy, ignoring the vertical component
+            // Calculate the direction to the nearest enemy, ignoring the vertical component
             enemyDirection = nearestEnemy.transform.position - transform.position;
             enemyDirection.y = 0; // Ignore the vertical component
             enemyDirection.Normalize();
@@ -58,6 +81,7 @@ public class JoystickMove : MonoBehaviour
         // Determine movement direction based on user input
         Vector3 movementDirection = new Vector3(movementInputX, 0, 0).normalized;
 
+        // Flip character based on movement direction
         if (movementInputX < -0.01f && nearestEnemy == null)
         {
             transform.localScale = new Vector3(-5, 5, 1);
@@ -66,14 +90,16 @@ public class JoystickMove : MonoBehaviour
         {
             transform.localScale = new Vector3(5, 5, 1);
         }
-            // If moving opposite to the enemy, move backward
+
+        // If moving opposite to the enemy, move backward
         bool isOppositeDirection = Vector3.Dot(movementDirection, enemyDirection) < 0;
         if (isOppositeDirection)
         {
             movementDirection *= -1;
         }
 
-        if (Mathf.Abs(movementDirection.x) > 0 && isGrounded)
+        // Set animation for running
+        if (Mathf.Abs(movementDirection.x) > 0 && isGrounded())
         {
             anim.SetBool("Run", true);
         }
@@ -82,38 +108,56 @@ public class JoystickMove : MonoBehaviour
             anim.SetBool("Run", false);
         }
 
-
-        body.velocity = new Vector2(movementInputX * speed * Time.deltaTime, body.velocity.y);
+        // Prevent movement when not grounded and walled
+        if (!isGrounded() && isWalled)
+        {
+            body.velocity = new Vector2(0, body.velocity.y);
+        }
+        else
+        {
+            body.velocity = new Vector2(movementInputX * speed * Time.deltaTime, body.velocity.y);
+        }
     }
 
     void OnJumpButtonClick()
     {
         Debug.Log("Jump button clicked!");
-        if (isGrounded)
+        if (isGrounded())
         {
             body.velocity = new Vector2(body.velocity.x, jumpForce);
         }
- 
-        
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    public bool isGrounded()
     {
-        if (collision.gameObject != gameObject && collision.gameObject.layer != LayerMask.NameToLayer("playerZone") && collision.gameObject.layer != LayerMask.NameToLayer("Enemy")) // Ensure the player doesn't collide with itself
+        RaycastHit2D hit = Physics2D.BoxCast(transform.position, boxSize, 0, -transform.up, castDistance, groundLayer);
+        return hit.collider != null;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Check if colliding with the ground layer
+        if (collision.gameObject.layer == LayerMask.NameToLayer("groundLayer"))
         {
-            isGrounded = true;
-            anim.SetBool("Jump", false);
+            isWalled = true;
         }
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject != gameObject && collision.gameObject.layer != LayerMask.NameToLayer("playerZone") && collision.gameObject.layer != LayerMask.NameToLayer("Enemy") ) // Ensure the player doesn't collide with itself
+        // Check if no longer colliding with the ground layer
+        if (collision.gameObject.layer == LayerMask.NameToLayer("groundLayer"))
         {
-            isGrounded = false;
-            anim.SetBool("Jump", true);
+            isWalled = false;
         }
     }
+
+    bool IsWallOnDirection(Vector2 direction)
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, castDistance, groundLayer);
+        return hit.collider != null;
+    }
+
     GameObject FindNearestEnemy()
     {
         GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
@@ -132,5 +176,9 @@ public class JoystickMove : MonoBehaviour
 
         return nearestEnemy;
     }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireCube(transform.position - transform.up * castDistance, boxSize);
+    }
 }
-    
