@@ -11,8 +11,11 @@ public class JoystickMove : MonoBehaviour
     public float castDistance;
     public LayerMask groundLayer;
     private Animator anim;
-    public bool isWalled;
+    // public bool isWalled;
     public Transform gunHand;
+    [SerializeField]
+    private float offset = 1f; // Adjust this value as needed
+
 
     void Start()
     {
@@ -40,19 +43,21 @@ public class JoystickMove : MonoBehaviour
     {
         float movementInputX = movementJoystick.Direction.x;
 
-        // Check if there's a wall on the left or right
-        bool isWallOnLeft = IsWallOnDirection(Vector2.left);
-        bool isWallOnRight = IsWallOnDirection(Vector2.right);
+// Check if there's a wall on the left or right
+bool isWallOnLeft = CheckWall(Vector2.left);
+bool isWallOnRight = CheckWall(Vector2.right);
 
-        // Adjust movement direction based on wall presence
-        if (isWallOnLeft && movementInputX < 0)
-        {
-            movementInputX = 0; // Disable left movement
-        }
-        else if (isWallOnRight && movementInputX > 0)
-        {
-            movementInputX = 0; // Disable right movement
-        }
+// Adjust movement direction based on wall presence
+if (isWallOnLeft && movementInputX < 0)
+{
+    movementInputX = Mathf.Clamp(movementInputX, 0, 1); // Limit left movement
+}
+else if (isWallOnRight && movementInputX > 0)
+{
+    movementInputX = Mathf.Clamp(movementInputX, -1, 0); // Limit right movement
+}
+
+
 
         // Find the nearest enemy
         GameObject nearestEnemy = FindNearestEnemy();
@@ -109,14 +114,14 @@ public class JoystickMove : MonoBehaviour
         }
 
         // Prevent movement when not grounded and walled
-        if (!isGrounded() && isWalled)
-        {
-            body.velocity = new Vector2(0, body.velocity.y);
-        }
-        else
-        {
+        // if (!isGrounded() && isWalled)
+        // {
+        //     body.velocity = new Vector2(0, body.velocity.y);
+        // }
+        // else
+        // {
             body.velocity = new Vector2(movementInputX * speed * Time.deltaTime, body.velocity.y);
-        }
+        // }
     }
 
     void OnJumpButtonClick()
@@ -128,29 +133,45 @@ public class JoystickMove : MonoBehaviour
         }
     }
 
-    public bool isGrounded()
-    {
-        RaycastHit2D hit = Physics2D.BoxCast(transform.position, boxSize, 0, -transform.up, castDistance, groundLayer);
-        return hit.collider != null;
-    }
+public bool isGrounded()
+{
+    // Calculate the raycast origin just below the character's feet
+    Vector2 originPosition = new Vector2(transform.position.x, transform.position.y - GetComponent<Collider2D>().bounds.extents.y - 0.02f);
+    RaycastHit2D hit = Physics2D.Raycast(originPosition, -transform.up, castDistance, groundLayer);
+    return hit.collider != null;
+}
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        // Check if colliding with the ground layer
-        if (collision.gameObject.layer == LayerMask.NameToLayer("groundLayer"))
-        {
-            isWalled = true;
-        }
-    }
+private bool CheckWall(Vector2 direction)
+{
+    // Offset the raycast origin to the side of the character
+    Vector2 origin = new Vector2(transform.position.x + direction.x * GetComponent<Collider2D>().bounds.extents.x * 1.1f,
+                                 transform.position.y);
 
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        // Check if no longer colliding with the ground layer
-        if (collision.gameObject.layer == LayerMask.NameToLayer("groundLayer"))
-        {
-            isWalled = false;
-        }
-    }
+    // Perform an overlap check to see if there's a wall
+    Collider2D hitCollider = Physics2D.OverlapBox(origin, new Vector2(0.2f, GetComponent<Collider2D>().bounds.size.y), 0, groundLayer);
+    
+    return hitCollider != null && !hitCollider.CompareTag("OneWayPlatform");
+}
+
+
+    // private void OnCollisionEnter2D(Collision2D collision)
+    // {
+    //     // Check if colliding with the ground layer
+    //     if (collision.gameObject.layer == LayerMask.NameToLayer("groundLayer") )
+    //     {
+    //         isWalled = true;
+    //     }
+    // }
+
+    // private void OnCollisionExit2D(Collision2D collision)
+    // {
+    //     // Check if no longer colliding with the ground layer
+    //     if (collision.gameObject.layer == LayerMask.NameToLayer("groundLayer") )
+    //     {
+    //         isWalled = false;
+    //     }
+
+    // }
 
     bool IsWallOnDirection(Vector2 direction)
     {

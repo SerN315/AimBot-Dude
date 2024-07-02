@@ -1,5 +1,3 @@
-
-
 using UnityEngine;
 
 public class Bullets : MonoBehaviour
@@ -7,8 +5,8 @@ public class Bullets : MonoBehaviour
     private bool hit;
     public float speed = 0;
     private float timer;
-    private CapsuleCollider2D capsuleCollider2;
     public Rigidbody2D rb;
+    
     // Start is called before the first frame update
     void Awake()
     {
@@ -18,29 +16,33 @@ public class Bullets : MonoBehaviour
 
     private void Update()
     {
-
         timer += Time.deltaTime;
         if (timer > 5)
         {
             Destroy(gameObject);
         }
     }
-    // Update is called once per frame
+
     void OnTriggerEnter2D(Collider2D hitInfo)
     {
-        Debug.Log(hitInfo.tag);
-        if (hitInfo.gameObject.layer == LayerMask.NameToLayer("Enemy")) 
+        // Ignore collision with objects tagged as "Platform"
+        if (hitInfo.CompareTag("OneWayPlatform"))
+        {
+            Physics2D.IgnoreCollision(hitInfo, GetComponent<Collider2D>());
+            return;
+        }
+
+        // Handle collision with enemies
+        if (hitInfo.CompareTag("Enemy"))
         {
             Enemy enemy = hitInfo.GetComponent<Enemy>();
             if (enemy != null)
             {
                 enemy.TakeDamage(20);
-                Destroy(gameObject);
             }
         }
-        else {
-            Destroy(gameObject);
-        }
 
-}
+        // Destroy the bullet in any case
+        Destroy(gameObject);
+    }
 }

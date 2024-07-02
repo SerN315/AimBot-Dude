@@ -10,6 +10,7 @@ public abstract class Enemy : MonoBehaviour
     public string runParameterName = "run";
     public bool facesLeftByDefault = true;
     private GameManager gameManager;
+    private SimpleHit flashEffect;
     public float patrolPointSpacing = 2f;
     public int numberOfPatrolPoints = 3;
     public LayerMask groundLayer;
@@ -23,11 +24,22 @@ public abstract class Enemy : MonoBehaviour
     protected bool isShieldActive = false;
     protected bool isCooldownActive = false;
     protected float cooldownDuration = 2f;
+    private float deathDelay = 0.2f;
+    private bool isDead = false;
 
     protected virtual void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+           // Ensure the flashEffect is assigned
+        if (flashEffect == null)
+        {
+            flashEffect = GetComponent<SimpleHit>();
+            if (flashEffect == null)
+            {
+                Debug.LogError("FlashEffect is not assigned and SimpleHit component is not found on the player.");
+            }
+        }
 
         // Generate patrol points automatically
         GeneratePatrolPoints();
@@ -148,6 +160,11 @@ public abstract class Enemy : MonoBehaviour
             Debug.Log("Shield is active. No damage taken.");
             return;
         }
+        if (flashEffect != null)
+        {
+            flashEffect.Flash();
+        }
+
 
         health -= damage;
         Debug.Log("Enemy took damage: " + damage + ", current health: " + health);
@@ -157,7 +174,7 @@ public abstract class Enemy : MonoBehaviour
             StartCoroutine(ActivateShieldIfNeeded());
         }
 
-        if (health <= 0)
+        if (health <= 0 && !isDead)
         {
             Die();
             gameManager.EnemyDestroyed();
@@ -176,8 +193,17 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void Die()
     {
-        Destroy(gameObject);
+            isDead = true;
+            anim.SetBool("dead", true);
+            StartCoroutine(HandleDeath());
+            
         
+    }
+
+    private IEnumerator HandleDeath()
+    {
+        yield return new WaitForSeconds(deathDelay);
+        Destroy(gameObject);
     }
 
     public abstract void HandleDetection(Collider2D other);
@@ -200,7 +226,7 @@ private void GeneratePatrolPoints()
     if (hit.collider != null)
     {
         // Calculate the length of the platform within the ground layer
-        float platformLength = CalculatePlatformLength(hit.point);
+        float platformLength = CalculatePlatformLength(hit.point, hit.collider);
 
         // Adjust spacing if it's longer than the platform length
         if (platformLength < patrolPointSpacing)
@@ -210,8 +236,8 @@ private void GeneratePatrolPoints()
     }
 
     // Place patrol points at the calculated positions
-    Vector3 leftPatrolPoint = startPoint + new Vector3(-effectiveSpacing / 2f, collider.bounds.extents.y, 0);
-    Vector3 rightPatrolPoint = startPoint + new Vector3(effectiveSpacing / 2f, collider.bounds.extents.y, 0);
+    Vector3 leftPatrolPoint = startPoint + new Vector3(-effectiveSpacing / 2f, 0, 0);
+    Vector3 rightPatrolPoint = startPoint + new Vector3(effectiveSpacing / 2f, 0, 0);
 
     // Ensure the Y position matches the center of the enemy
     leftPatrolPoint.y = transform.position.y;
@@ -229,6 +255,14 @@ private void GeneratePatrolPoints()
         currentPatrolPoint = patrolPoints[0];
     }
 }
+
+private float CalculatePlatformLength(Vector2 hitPoint, Collider2D hitCollider)
+{
+    float leftEdge = hitCollider.bounds.min.x;
+    float rightEdge = hitCollider.bounds.max.x;
+    return rightEdge - leftEdge;
+}
+
 
 private float CalculatePlatformLength(Vector3 start)
 {
