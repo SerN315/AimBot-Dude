@@ -9,14 +9,16 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverUI; // Reference to the merged UI panel
     private bool isGameOver = false; // Flag to track game over state
     private int totalEnemies; // Total number of enemies in the scene
-     public TMP_Text gameOverText; // Reference to the text component for game over message
+    public TMP_Text gameOverText; // Reference to the text component for game over message
     public TMP_Text gameOverDetailsText; // Reference to the text component for additional details
+    public PowerUpManager powerUpManager;
 
     void Start()
     {
         // Ensure game over UI starts inactive
         totalEnemies = GameObject.FindGameObjectsWithTag("Enemy").Length;
         gameOverUI.SetActive(false);
+        powerUpManager = FindObjectOfType<PowerUpManager>();
     }
 
     // Call this method when the player dies
@@ -32,25 +34,28 @@ public class GameManager : MonoBehaviour
         // Pause game actions or time scale
         Time.timeScale = 0f; // Pause time scale
         movementUI.SetActive(false);
+
+        // Reset power-ups
+        powerUpManager.ResetPowerUps();
     }
 
-        public void EnemyDestroyed()
+    public void EnemyDestroyed()
     {
         totalEnemies--;
-        Debug.Log("Number of barriers found: " + totalEnemies);
+        Debug.Log("Number of enemies remaining: " + totalEnemies);
 
         // Check win condition
         if (totalEnemies <= 0)
         {
             CheckAndDestroyBarriers();
+            powerUpManager.ShowPowerUpUI();
         }
     }
 
     private void CheckAndDestroyBarriers()
     {
         GameObject[] barriers = GameObject.FindGameObjectsWithTag("Finish");
-         Debug.Log("Number of barriers found: " + barriers.Length); // Log number of barriers found
-
+        Debug.Log("Number of barriers found: " + barriers.Length); // Log number of barriers found
 
         foreach (GameObject barrier in barriers)
         {
@@ -71,6 +76,7 @@ public class GameManager : MonoBehaviour
         // Pause game actions or time scale
         Time.timeScale = 0f; // Pause time scale
         movementUI.SetActive(false);
+        powerUpManager.SaveSelectedPowerUps();
     }
 
     // Retry the level
@@ -89,6 +95,9 @@ public class GameManager : MonoBehaviour
     {
         // Reset time scale
         Time.timeScale = 1f;
+
+        // Save power-ups before reloading the scene
+        powerUpManager.SaveSelectedPowerUps();
 
         // Reload the current scene
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);

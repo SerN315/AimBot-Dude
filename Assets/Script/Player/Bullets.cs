@@ -4,6 +4,7 @@ public class Bullets : MonoBehaviour
 {
     private bool hit;
     public float speed = 0;
+    public int damage = 20;
     private float timer;
     public Rigidbody2D rb;
     
@@ -38,11 +39,19 @@ public class Bullets : MonoBehaviour
             Enemy enemy = hitInfo.GetComponent<Enemy>();
             if (enemy != null)
             {
-                enemy.TakeDamage(20);
+                enemy.TakeDamage(damage);
             }
         }
 
         // Destroy the bullet in any case
         Destroy(gameObject);
+    }
+    public void DamageUp(int DamageAmount)
+    {
+        damage = damage + DamageAmount;
+    }
+    public void ResetDamage()
+    {
+        damage = 20;
     }
 }

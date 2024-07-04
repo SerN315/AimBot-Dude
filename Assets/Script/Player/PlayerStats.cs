@@ -10,12 +10,14 @@ public class PlayerStats : MonoBehaviour
     private GameManager gameManager;
     public GameObject gunHand;
     private SimpleHit gunHandFlashEffect;
-    [SerializeField] private float deathDelay = 0.2f;
+    [SerializeField] private float deathDelay = 1f;
     private bool isDead = false;
+    private int currentHealth;
 
     // Start is called before the first frame update
     void Start()
     {
+        currentHealth = health;
         gameManager = FindObjectOfType<GameManager>();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
@@ -67,9 +69,9 @@ public class PlayerStats : MonoBehaviour
             gunHandFlashEffect.Flash();
         }
 
-        health -= damage;
+        currentHealth -= damage;
 
-        if (health <= 0 && !isDead)
+        if (currentHealth <= 0 && !isDead)
         {
         if (gunHand != null)
         {
@@ -93,5 +95,18 @@ public class PlayerStats : MonoBehaviour
     public bool IsDead()
     {
         return isDead;
+    }
+
+
+    public void RecoverHealth(int amount)
+    {
+        currentHealth = Mathf.Min(currentHealth + amount,health);
+        // Update health UI or other logic
+    }
+
+    public void ResetHealth()
+    {
+        currentHealth = health;
+        // Reset other health-related states
     }
 }

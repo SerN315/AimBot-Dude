@@ -5,6 +5,8 @@ public class JoystickMove : MonoBehaviour
 {
     public Rigidbody2D body;
     public float speed, jumpForce;
+    public float baseSpeed = 50f;
+    private float speedMultiplier = 10f;
     public Joystick movementJoystick;
     public Button jumpButton;
     public Vector2 boxSize;
@@ -19,6 +21,7 @@ public class JoystickMove : MonoBehaviour
 
     void Start()
     {
+        speed = baseSpeed * speedMultiplier;
         body = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         
@@ -36,6 +39,7 @@ public class JoystickMove : MonoBehaviour
 
     void Update()
     {
+        speed = baseSpeed * speedMultiplier;
         anim.SetBool("Jump", !isGrounded());
     }
 
@@ -154,25 +158,6 @@ private bool CheckWall(Vector2 direction)
 }
 
 
-    // private void OnCollisionEnter2D(Collision2D collision)
-    // {
-    //     // Check if colliding with the ground layer
-    //     if (collision.gameObject.layer == LayerMask.NameToLayer("groundLayer") )
-    //     {
-    //         isWalled = true;
-    //     }
-    // }
-
-    // private void OnCollisionExit2D(Collision2D collision)
-    // {
-    //     // Check if no longer colliding with the ground layer
-    //     if (collision.gameObject.layer == LayerMask.NameToLayer("groundLayer") )
-    //     {
-    //         isWalled = false;
-    //     }
-
-    // }
-
     bool IsWallOnDirection(Vector2 direction)
     {
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, castDistance, groundLayer);
@@ -197,6 +182,20 @@ private bool CheckWall(Vector2 direction)
 
         return nearestEnemy;
     }
+
+
+    public void ApplySpeedBoost(float multiplier)
+    {
+        speedMultiplier *= multiplier;
+    }
+
+
+    public void ResetPowerUps()
+    {
+        speedMultiplier = 1f;
+        // Reset other power-up effects
+    }
+
 
     private void OnDrawGizmos()
     {
