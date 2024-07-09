@@ -16,7 +16,7 @@ public class PowerUpManager : MonoBehaviour
     public Image[] powerUpIcons;
     public TMP_Text[] powerUpDescriptions;
     private GameManager gameManager;
-    private List<PowerUpsEffect> selectedPowerUps = new List<PowerUpsEffect>();
+    private Dictionary<PowerUpsEffect, int> selectedPowerUps = new Dictionary<PowerUpsEffect, int>();
 
     private void Start()
     {
@@ -31,23 +31,19 @@ public class PowerUpManager : MonoBehaviour
     {
         Time.timeScale = 0f;
         movementUI.SetActive(false);
-        selectedPowerUps.Clear();
-        while (selectedPowerUps.Count < 3)
+        List<PowerUpsEffect> availablePowerUps = new List<PowerUpsEffect>(powerUps);
+        while (availablePowerUps.Count > 3)
         {
-            PowerUpsEffect randomPowerUp = powerUps[Random.Range(0, powerUps.Count)];
-            if (!selectedPowerUps.Contains(randomPowerUp))
-            {
-                selectedPowerUps.Add(randomPowerUp);
-            }
+            availablePowerUps.RemoveAt(Random.Range(0, availablePowerUps.Count));
         }
 
         for (int i = 0; i < powerUpButtons.Length; i++)
         {
             int index = i; // Local copy for lambda
-            powerUpIcons[i].sprite = selectedPowerUps[i].icon;
-            powerUpDescriptions[i].text = selectedPowerUps[i].description;
+            powerUpIcons[i].sprite = availablePowerUps[i].icon;
+            powerUpDescriptions[i].text = availablePowerUps[i].description;
             powerUpButtons[i].onClick.RemoveAllListeners();
-            powerUpButtons[i].onClick.AddListener(() => SelectPowerUp(selectedPowerUps[index]));
+            powerUpButtons[i].onClick.AddListener(() => SelectPowerUp(availablePowerUps[index]));
         }
 
         powerUpUIPanel.SetActive(true);
@@ -55,8 +51,20 @@ public class PowerUpManager : MonoBehaviour
 
     private void SelectPowerUp(PowerUpsEffect powerUp)
     {
-        // Apply the power-up effect
-        powerUp.ApplyEffect(GameObject.FindWithTag("Player"));
+        if (selectedPowerUps.ContainsKey(powerUp))
+        {
+            selectedPowerUps[powerUp]++;
+        }
+        else
+        {
+            selectedPowerUps[powerUp] = 1;
+        }
+
+        // Apply the power-up effect as many times as it is stacked
+        for (int i = 0; i < selectedPowerUps[powerUp]; i++)
+        {
+            powerUp.ApplyEffect(GameObject.FindWithTag("Player"));
+        }
 
         // Hide the UI panel
         powerUpUIPanel.SetActive(false);
@@ -66,64 +74,70 @@ public class PowerUpManager : MonoBehaviour
 
     public void SaveSelectedPowerUps()
     {
-        // Save selected power-ups
+        // Clear previous saved data
+        PlayerPrefs.DeleteAll();
+
         PlayerPrefs.SetInt("SelectedPowerUpCount", selectedPowerUps.Count);
-        for (int i = 0; i < selectedPowerUps.Count; i++)
+        int i = 0;
+        foreach (var kvp in selectedPowerUps)
         {
-            PlayerPrefs.SetInt($"SelectedPowerUp_{i}", powerUps.IndexOf(selectedPowerUps[i]));
+            PlayerPrefs.SetInt($"SelectedPowerUp_{i}_Index", powerUps.IndexOf(kvp.Key));
+            PlayerPrefs.SetInt($"SelectedPowerUp_{i}_Count", kvp.Value);
+            i++;
         }
     }
 
     public void LoadSelectedPowerUps()
     {
-        // Load selected power-ups
         selectedPowerUps.Clear();
+        int count = PlayerPrefs.GetInt("SelectedPowerUpCount", 0);
+
+        for (int i = 0; i < count; i++)
+        {
+            int index = PlayerPrefs.GetInt($"SelectedPowerUp_{i}_Index", -1);
+            int powerUpCount = PlayerPrefs.GetInt($"SelectedPowerUp_{i}_Count", 0);
+
+            if (index != -1 && index < powerUps.Count)
+            {
+                PowerUpsEffect powerUp = powerUps[index];
+                selectedPowerUps[powerUp] = powerUpCount;
+                for (int j = 0; j < powerUpCount; j++)
+                {
+                    powerUp.ApplyEffect(GameObject.FindWithTag("Player"));
+                }
+            }
+        }
+    }
+
+    public void ResetPowerUps()
+    {
+        // Reset player-specific attributes
+        
+        if (joystickMove != null)
+        {
+            joystickMove.ResetPowerUps();
+        }
+        
+        if (playerStats != null)
+        {
+            playerStats.ResetHealth();
+        }
+        
+        if (bullets != null)
+        {
+            bullets.ResetDamage();
+        }
+
+        // Clear the selected power-ups
+        selectedPowerUps.Clear();
+
+        // Remove the stored power-ups from PlayerPrefs
         int count = PlayerPrefs.GetInt("SelectedPowerUpCount", 0);
         for (int i = 0; i < count; i++)
         {
-            int index = PlayerPrefs.GetInt($"SelectedPowerUp_{i}", -1);
-            if (index != -1 && index < powerUps.Count)
-            {
-                selectedPowerUps.Add(powerUps[index]);
-            }
+            PlayerPrefs.DeleteKey($"SelectedPowerUp_{i}_Index");
+            PlayerPrefs.DeleteKey($"SelectedPowerUp_{i}_Count");
         }
-
-        // Apply loaded power-ups
-        foreach (var powerUp in selectedPowerUps)
-        {
-            powerUp.ApplyEffect(GameObject.FindWithTag("Player"));
-        }
+        PlayerPrefs.DeleteKey("SelectedPowerUpCount");
     }
-
-public void ResetPowerUps()
-{
-    // Reset player-specific attributes
-    
-    if (joystickMove != null)
-    {
-        joystickMove.ResetPowerUps();
-    }
-    
-    if (playerStats != null)
-    {
-        playerStats.ResetHealth();
-    }
-    
-    if (bullets != null)
-    {
-        bullets.ResetDamage();
-    }
-
-    // Clear the selected power-ups
-    selectedPowerUps.Clear();
-
-    // Remove the stored power-ups from PlayerPrefs
-    int count = PlayerPrefs.GetInt("SelectedPowerUpCount", 0);
-    for (int i = 0; i < count; i++)
-    {
-        PlayerPrefs.DeleteKey($"SelectedPowerUp_{i}");
-    }
-    PlayerPrefs.DeleteKey("SelectedPowerUpCount");
-}
-
 }

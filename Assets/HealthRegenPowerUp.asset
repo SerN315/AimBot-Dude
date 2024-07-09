@@ -15,4 +15,5 @@ MonoBehaviour:
   powerUpName: Regen Health
   icon: {fileID: 0}
   description: Regen Health
+  StackCount: 0
   healthAmount: 30

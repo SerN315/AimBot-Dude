@@ -4,19 +4,12 @@ public class Attack : MonoBehaviour
 {
     public string enemyTag = "Enemy";
     public Transform gunHand;
-    public float bulletsPerSecond = 5f; // Number of bullets per second
+    public float fireRate = 5f; // Bullets per second
     public Transform firePoint;
     public GameObject BulletPrefab;
 
-    private float fireInterval;
-    public float secondsdelay;
     private float fireTimer = 0f;
-
-    void Start()
-    {
-        // Calculate the interval between each bullet based on the fire rate
-        fireInterval = secondsdelay / bulletsPerSecond;
-    }
+    private int additionalDamage = 0; // Additional damage from power-ups
 
     void Update()
     {
@@ -40,14 +33,14 @@ public class Attack : MonoBehaviour
             }
         }
 
-        // Increment the timer by the time passed since last frame
+        // Increment the timer by the time passed since the last frame
         fireTimer += Time.deltaTime;
 
         // If the timer exceeds the fire interval and there is an enemy, fire a bullet
-        if (fireTimer >= fireInterval && nearestEnemy != null)
+        if (fireTimer >= 1f / fireRate && nearestEnemy != null)
         {
             Shoot();
-            fireTimer -= fireInterval; // Reset the timer, taking into account the excess time
+            fireTimer = 0f; // Reset the timer
         }
     }
 
@@ -72,6 +65,16 @@ public class Attack : MonoBehaviour
 
     void Shoot()
     {
-        Instantiate(BulletPrefab, firePoint.position, firePoint.rotation);
+        GameObject bullet = Instantiate(BulletPrefab, firePoint.position, firePoint.rotation);
+        Bullets bulletComponent = bullet.GetComponent<Bullets>();
+        if (bulletComponent != null)
+        {
+            bulletComponent.SetDamage(additionalDamage);
+        }
+    }
+
+    public void ApplyDamagePowerUp(int damage)
+    {
+        additionalDamage += damage;
     }
 }

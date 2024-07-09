@@ -5,6 +5,7 @@ public class PlayerStats : MonoBehaviour
 {
     [SerializeField] private SimpleHit flashEffect;
     public int health = 100;
+
     private Rigidbody2D rb;
     private Animator anim;
     private GameManager gameManager;
@@ -12,17 +13,16 @@ public class PlayerStats : MonoBehaviour
     private SimpleHit gunHandFlashEffect;
     [SerializeField] private float deathDelay = 1f;
     private bool isDead = false;
-    private int currentHealth;
+    [SerializeField] private int currentHealth;
 
-    // Start is called before the first frame update
     void Start()
     {
         currentHealth = health;
+    Debug.Log("Initial health set to: " + currentHealth);
         gameManager = FindObjectOfType<GameManager>();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
 
-        // Ensure the flashEffect is assigned
         if (flashEffect == null)
         {
             flashEffect = GetComponent<SimpleHit>();
@@ -32,7 +32,6 @@ public class PlayerStats : MonoBehaviour
             }
         }
 
-        // Ensure the gunHand's flashEffect is assigned
         if (gunHand != null)
         {
             gunHandFlashEffect = gunHand.GetComponent<SimpleHit>();
@@ -47,7 +46,6 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         // Update logic if necessary
@@ -57,13 +55,11 @@ public class PlayerStats : MonoBehaviour
     {
         Debug.Log("Player takes damage: " + damage); // Log damage taken
 
-        // Call the flash effect when taking damage
         if (flashEffect != null)
         {
             flashEffect.Flash();
         }
 
-        // Call the flash effect on gunHand when taking damage
         if (gunHandFlashEffect != null)
         {
             gunHandFlashEffect.Flash();
@@ -73,12 +69,12 @@ public class PlayerStats : MonoBehaviour
 
         if (currentHealth <= 0 && !isDead)
         {
-        if (gunHand != null)
-        {
-            gunHand.SetActive(false);
-        }
             isDead = true;
             anim.SetBool("died", true);
+            if (gunHand != null)
+            {
+                gunHand.SetActive(false);
+            }
             Debug.Log("Player health reached zero or below.");
             StartCoroutine(HandlePlayerDeath());
         }
@@ -87,7 +83,6 @@ public class PlayerStats : MonoBehaviour
     private IEnumerator HandlePlayerDeath()
     {
         yield return new WaitForSeconds(deathDelay);
-
         gameManager.PlayerDied();
         Destroy(gameObject);
     }
@@ -97,12 +92,19 @@ public class PlayerStats : MonoBehaviour
         return isDead;
     }
 
-
     public void RecoverHealth(int amount)
     {
-        currentHealth = Mathf.Min(currentHealth + amount,health);
-        // Update health UI or other logic
+    Debug.Log("Current health before recovery: " + currentHealth);
+    currentHealth = Mathf.Min(currentHealth + amount, health);
+    Debug.Log("Recovered health by " + amount + ". Current health after recovery: " + currentHealth);
     }
+    public void IncreaseMaxHealth(int amount)
+{
+    health += amount;
+    currentHealth = Mathf.Min(currentHealth + amount, health);
+    Debug.Log("Increased max health by " + amount + ". New max health: " + health + ", Current health: " + currentHealth);
+    // Update health UI or other logic
+}
 
     public void ResetHealth()
     {

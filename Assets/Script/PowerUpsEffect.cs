@@ -8,6 +8,7 @@ public class PowerUpsEffect : ScriptableObject
     public string powerUpName;
     public Sprite icon;
     public string description;
+      public int StackCount; 
 
     public virtual void ApplyEffect(GameObject player)
     {

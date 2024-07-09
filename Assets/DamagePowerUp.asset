@@ -15,4 +15,5 @@ MonoBehaviour:
   powerUpName: Damage Boost
   icon: {fileID: 0}
   description: Damage Boost
-  DamageAmount: 100
+  StackCount: 0
+  DamageAmount: 30

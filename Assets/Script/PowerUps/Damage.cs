@@ -1,15 +1,17 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "DamagePowerUp", menuName = "ScriptableObjects/PowerUp/DamageUp", order = 3)]
-public class ShieldPowerUp : PowerUpsEffect
+public class DamagePowerUp : PowerUpsEffect
 {
     public int DamageAmount;
+
     public override void ApplyEffect(GameObject player)
     {
-        Bullets playerController = player.GetComponent<Bullets>();
-        if (playerController != null)
+        Debug.Log("Applying damage increase: " + DamageAmount);
+        Attack playerAttack = player.GetComponent<Attack>();
+        if (playerAttack != null)
         {
-            playerController.DamageUp(DamageAmount);
+            playerAttack.ApplyDamagePowerUp(DamageAmount);
         }
     }
 }

@@ -4,10 +4,10 @@ public class Bullets : MonoBehaviour
 {
     private bool hit;
     public float speed = 0;
-    public int damage = 20;
+    public int damage = 20; // Base damage
     private float timer;
     public Rigidbody2D rb;
-    
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -46,10 +46,17 @@ public class Bullets : MonoBehaviour
         // Destroy the bullet in any case
         Destroy(gameObject);
     }
+
+    public void SetDamage(int additionalDamage)
+    {
+        damage += additionalDamage;
+    }
+
     public void DamageUp(int DamageAmount)
     {
-        damage = damage + DamageAmount;
+        damage += DamageAmount;
     }
+
     public void ResetDamage()
     {
         damage = 20;
