@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 6355744358632525305}
   m_Layer: 9
   m_Name: Bullet 1
-  m_TagString: Undefined
+  m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -246,5 +246,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b05d21a46438eb44ab3a593c719f160d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
+  speed: 20
+  damage: 20
   rb: {fileID: 4592132445930387375}

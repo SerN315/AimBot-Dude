@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverUI; // Reference to the merged UI panel
     private bool isGameOver = false; // Flag to track game over state
     private int totalEnemies; // Total number of enemies in the scene
+    public Button retryButton;
+    public Button continueButton;
     public TMP_Text gameOverText; // Reference to the text component for game over message
     public TMP_Text gameOverDetailsText; // Reference to the text component for additional details
     public PowerUpManager powerUpManager;
@@ -19,6 +21,8 @@ public class GameManager : MonoBehaviour
         totalEnemies = GameObject.FindGameObjectsWithTag("Enemy").Length;
         gameOverUI.SetActive(false);
         powerUpManager = FindObjectOfType<PowerUpManager>();
+        retryButton.gameObject.SetActive(false);
+        continueButton.gameObject.SetActive(false);
     }
 
     // Call this method when the player dies
@@ -26,7 +30,7 @@ public class GameManager : MonoBehaviour
     {
         // Set game over flag
         isGameOver = true;
-
+retryButton.gameObject.SetActive(true);
         // Display game over UI
         gameOverUI.SetActive(true);
         gameOverText.text = "Floor cleared";
@@ -35,8 +39,6 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f; // Pause time scale
         movementUI.SetActive(false);
 
-        // Reset power-ups
-        powerUpManager.ResetPowerUps();
     }
 
     public void EnemyDestroyed()
@@ -72,11 +74,11 @@ public class GameManager : MonoBehaviour
         gameOverDetailsText.text = "";
         // Display game over UI
         gameOverUI.SetActive(true);
-
+continueButton.gameObject.SetActive(true);
         // Pause game actions or time scale
         Time.timeScale = 0f; // Pause time scale
         movementUI.SetActive(false);
-        powerUpManager.SaveSelectedPowerUps();
+
     }
 
     // Retry the level
@@ -85,6 +87,8 @@ public class GameManager : MonoBehaviour
         // Reset time scale
         Time.timeScale = 1f;
 
+        // Reset power-ups
+        powerUpManager.ResetPowerUps();
         // Reload the current scene
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         movementUI.SetActive(true);

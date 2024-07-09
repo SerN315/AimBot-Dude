@@ -15,4 +15,4 @@ MonoBehaviour:
   powerUpName: Speed Boost
   icon: {fileID: 0}
   description: Speed Boost
-  speedMultiplier: 2
+  speedMultiplier: 1.5

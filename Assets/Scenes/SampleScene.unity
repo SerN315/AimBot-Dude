@@ -1066,7 +1066,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   flashEffect: {fileID: 0}
-  health: 50
+  health: 100
   gunHand: {fileID: 1951922858}
   deathDelay: 2
 --- !u!114 &305320700
@@ -3338,6 +3338,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementUI: {fileID: 211240143}
   gameOverUI: {fileID: 1034970246}
+  retryButton: {fileID: 534448173}
+  continueButton: {fileID: 2006503904}
   gameOverText: {fileID: 878876382}
   gameOverDetailsText: {fileID: 1729916768}
   powerUpManager: {fileID: 0}
@@ -4394,7 +4396,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Main Menu
+  m_text: Continue
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

@@ -8,6 +8,7 @@ public class PowerUpManager : MonoBehaviour
     public JoystickMove joystickMove;
     public PlayerStats playerStats;
     public Bullets bullets;
+   
     public List<PowerUpsEffect> powerUps;
     public GameObject powerUpUIPanel;
     public Button[] powerUpButtons;
@@ -94,22 +95,35 @@ public class PowerUpManager : MonoBehaviour
         }
     }
 
-    public void ResetPowerUps()
+public void ResetPowerUps()
+{
+    // Reset player-specific attributes
+    
+    if (joystickMove != null)
     {
-        // Reset player-specific attributes
         joystickMove.ResetPowerUps();
-        playerStats.ResetHealth();
-        bullets.ResetDamage();
-
-        // Clear the selected power-ups
-        selectedPowerUps.Clear();
-
-        // Remove the stored power-ups from PlayerPrefs
-        int count = PlayerPrefs.GetInt("SelectedPowerUpCount", 0);
-        for (int i = 0; i < count; i++)
-        {
-            PlayerPrefs.DeleteKey($"SelectedPowerUp_{i}");
-        }
-        PlayerPrefs.DeleteKey("SelectedPowerUpCount");
     }
+    
+    if (playerStats != null)
+    {
+        playerStats.ResetHealth();
+    }
+    
+    if (bullets != null)
+    {
+        bullets.ResetDamage();
+    }
+
+    // Clear the selected power-ups
+    selectedPowerUps.Clear();
+
+    // Remove the stored power-ups from PlayerPrefs
+    int count = PlayerPrefs.GetInt("SelectedPowerUpCount", 0);
+    for (int i = 0; i < count; i++)
+    {
+        PlayerPrefs.DeleteKey($"SelectedPowerUp_{i}");
+    }
+    PlayerPrefs.DeleteKey("SelectedPowerUpCount");
+}
+
 }
