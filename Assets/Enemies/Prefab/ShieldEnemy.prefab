@@ -267,6 +267,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   ledgeCheckDistance: 1
+  coinPrefab: {fileID: 1306307913785035900, guid: 1372516f3ac2dd147a82597460ee59d1, type: 3}
+  silverCoinPrefab: {fileID: 6657591938719990784, guid: 90a9597c565201147a21db0a8d33aca0, type: 3}
+  bronzeCoinPrefab: {fileID: 9147394789131106719, guid: f9b698899e61a4744bc7c06878b75710, type: 3}
+  coinBagPrefab: {fileID: 488685172963431120, guid: 9bb70ec4576058f4c80c433ecab60a8d, type: 3}
 --- !u!95 &1341530436760337026
 Animator:
   serializedVersion: 5

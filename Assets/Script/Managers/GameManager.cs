@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
     {
         // Set game over flag
         isGameOver = true;
-retryButton.gameObject.SetActive(true);
+        retryButton.gameObject.SetActive(true);
         // Display game over UI
         gameOverUI.SetActive(true);
         gameOverText.text = "Floor cleared";
@@ -39,6 +39,8 @@ retryButton.gameObject.SetActive(true);
         Time.timeScale = 0f; // Pause time scale
         movementUI.SetActive(false);
 
+        // Reset collected currency
+        CurrencyManager.Instance.ResetCurrency();
     }
 
     public void EnemyDestroyed()
@@ -74,11 +76,17 @@ retryButton.gameObject.SetActive(true);
         gameOverDetailsText.text = "";
         // Display game over UI
         gameOverUI.SetActive(true);
-continueButton.gameObject.SetActive(true);
+        continueButton.gameObject.SetActive(true);
         // Pause game actions or time scale
         Time.timeScale = 0f; // Pause time scale
         movementUI.SetActive(false);
 
+        // Save the collected currency to PlayerPrefs
+        int totalMoney = PlayerPrefs.GetInt("TotalMoney", 0) + CurrencyManager.Instance.GetCurrentLevelCurrency();
+        PlayerPrefs.SetInt("TotalMoney", totalMoney);
+
+        // Reset collected currency
+        CurrencyManager.Instance.ResetCurrency();
     }
 
     // Retry the level

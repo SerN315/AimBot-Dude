@@ -7,6 +7,8 @@ TagManager:
   - Enemy
   - OneWayPlatform
   - Projectile
+  - Breakable
+  - Currency
   - Undefined
   layers:
   - Default

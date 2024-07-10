@@ -201,4 +201,9 @@ private bool CheckWall(Vector2 direction)
     {
         Gizmos.DrawWireCube(transform.position - transform.up * castDistance, boxSize);
     }
+    private void OnCollisionEnter2D(Collision2D other) {
+         if (other.collider.CompareTag("Currency")){
+            Destroy(other.gameObject);
+         }
+    }
 }

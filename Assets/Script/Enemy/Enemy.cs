@@ -26,6 +26,10 @@ public abstract class Enemy : MonoBehaviour
     protected float cooldownDuration = 2f;
     private float deathDelay = 0.2f;
     private bool isDead = false;
+    public GameObject coinPrefab;
+    public GameObject silverCoinPrefab;
+    public GameObject bronzeCoinPrefab;
+    public GameObject coinBagPrefab;
 
     protected virtual void Start()
     {
@@ -203,8 +207,48 @@ public abstract class Enemy : MonoBehaviour
     private IEnumerator HandleDeath()
     {
         yield return new WaitForSeconds(deathDelay);
+
+        int coinValue = Random.Range(5, 101); // Random value between 5 and 100
+        SpawnCoins(coinValue);
+
         Destroy(gameObject);
     }
+
+private void SpawnCoins(int value)
+{
+    while (value > 0)
+    {
+        if (value >= 60)
+        {
+            Instantiate(coinBagPrefab, transform.position, Quaternion.identity);
+            CurrencyManager.Instance.AddCurrency(60);
+            value -= 60;
+        }
+        else if (value >= 30)
+        {
+            Instantiate(coinPrefab, transform.position, Quaternion.identity);
+            CurrencyManager.Instance.AddCurrency(30);
+            value -= 30;
+        }
+        else if (value >= 20)
+        {
+            Instantiate(silverCoinPrefab, transform.position, Quaternion.identity);
+            CurrencyManager.Instance.AddCurrency(20);
+            value -= 20;
+        }
+        else if (value >= 10)
+        {
+            Instantiate(bronzeCoinPrefab, transform.position, Quaternion.identity);
+            CurrencyManager.Instance.AddCurrency(10);
+            value -= 10;
+        }
+        else
+        {
+            break;
+        }
+    }
+}
+
 
     public abstract void HandleDetection(Collider2D other);
 
