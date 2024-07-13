@@ -51,8 +51,19 @@ public class GameManager : MonoBehaviour
         // Check win condition
         if (totalEnemies <= 0)
         {
-            CheckAndDestroyBarriers();
-            powerUpManager.ShowPowerUpUI();
+
+
+        CheckAndDestroyBarriers();
+        powerUpManager.ShowPowerUpUI();
+        // Save the collected currency to PlayerPrefs at the end of each level
+        int totalMoney = PlayerPrefs.GetInt("TotalMoney", 0) + CurrencyManager.Instance.GetCurrentLevelCurrency();
+        PlayerPrefs.SetInt("TotalMoney", totalMoney);
+        PlayerPrefs.Save();  // Ensure the PlayerPrefs are saved
+
+        Debug.Log("Total money saved: " + totalMoney);
+
+        // Reset collected currency for the new level
+        CurrencyManager.Instance.ResetCurrency();
         }
     }
 
@@ -80,13 +91,9 @@ public class GameManager : MonoBehaviour
         // Pause game actions or time scale
         Time.timeScale = 0f; // Pause time scale
         movementUI.SetActive(false);
+        powerUpManager.ResetPowerUps();
 
-        // Save the collected currency to PlayerPrefs
-        int totalMoney = PlayerPrefs.GetInt("TotalMoney", 0) + CurrencyManager.Instance.GetCurrentLevelCurrency();
-        PlayerPrefs.SetInt("TotalMoney", totalMoney);
 
-        // Reset collected currency
-        CurrencyManager.Instance.ResetCurrency();
     }
 
     // Retry the level
@@ -103,16 +110,29 @@ public class GameManager : MonoBehaviour
     }
 
     // Proceed to the next level (or restart the current level for simplicity)
-    public void NextLevel()
+
+public void NextLevel()
+{
+    // Reset time scale
+    Time.timeScale = 1f;
+
+    // Save power-ups before reloading the scene
+    powerUpManager.SaveSelectedPowerUps();
+
+    int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
+
+    if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
     {
-        // Reset time scale
-        Time.timeScale = 1f;
-
-        // Save power-ups before reloading the scene
-        powerUpManager.SaveSelectedPowerUps();
-
-        // Reload the current scene
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene(nextSceneIndex);
         movementUI.SetActive(true);
     }
+    else
+    {
+        Debug.LogWarning("No more scenes available after the current one.");
+        PlayerWon();
+    }
+}
+
+
+
 }

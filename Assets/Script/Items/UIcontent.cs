@@ -1,13 +1,19 @@
 using UnityEngine;
-using TMPro;
+using UnityEngine.UI;
 
 public class DisplayTotalMoney : MonoBehaviour
 {
-    public TMP_Text totalMoneyText;
+    public Text totalMoneyText;
 
-    private void Start()
+    void Start()
+    {
+        UpdateTotalMoneyDisplay();
+    }
+
+    void UpdateTotalMoneyDisplay()
     {
         int totalMoney = PlayerPrefs.GetInt("TotalMoney", 0);
         totalMoneyText.text = "Total Money: " + totalMoney.ToString();
+        Debug.Log("Total Money Displayed: " + totalMoney); // Debug statement
     }
 }

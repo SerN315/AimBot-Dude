@@ -23,7 +23,7 @@ public class EndPoint : MonoBehaviour
         Debug.Log(hitInfo.tag);
         if (hitInfo.gameObject.layer == LayerMask.NameToLayer("Player")) 
         {
-            gameManager.PlayerWon();
+            gameManager.NextLevel();
 
 }
 }

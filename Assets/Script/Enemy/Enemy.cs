@@ -137,7 +137,7 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void HandleProjectileCollision(Collision2D collision)
     {
-        Debug.Log("Projectile touched the enemy");
+        // Debug.Log("Projectile touched the enemy");
         Destroy(collision.gameObject);
 
         if (!isShieldActive)
@@ -148,7 +148,7 @@ public abstract class Enemy : MonoBehaviour
 
     protected virtual void HandlePlayerCollision(Collision2D collision)
     {
-        Debug.Log("Player touched the enemy");
+        // Debug.Log("Player touched the enemy");
         PlayerStats playerStats = collision.collider.GetComponent<PlayerStats>();
 
         if (playerStats != null)
@@ -161,7 +161,7 @@ public abstract class Enemy : MonoBehaviour
     {
         if (isShieldActive)
         {
-            Debug.Log("Shield is active. No damage taken.");
+            // Debug.Log("Shield is active. No damage taken.");
             return;
         }
         if (flashEffect != null)
@@ -206,12 +206,13 @@ public abstract class Enemy : MonoBehaviour
 
     private IEnumerator HandleDeath()
     {
+        // Debug.Log("Handling Death");
         yield return new WaitForSeconds(deathDelay);
-
+        Destroy(gameObject);
         int coinValue = Random.Range(5, 101); // Random value between 5 and 100
         SpawnCoins(coinValue);
 
-        Destroy(gameObject);
+        
     }
 
 private void SpawnCoins(int value)
