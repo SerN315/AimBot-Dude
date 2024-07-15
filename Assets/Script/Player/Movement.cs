@@ -139,11 +139,16 @@ else if (isWallOnRight && movementInputX > 0)
 
 public bool isGrounded()
 {
-    // Calculate the raycast origin just below the character's feet
+    // Calculate the origin position just below the character's feet
     Vector2 originPosition = new Vector2(transform.position.x, transform.position.y - GetComponent<Collider2D>().bounds.extents.y - 0.02f);
-    RaycastHit2D hit = Physics2D.Raycast(originPosition, -transform.up, castDistance, groundLayer);
-    return hit.collider != null;
+    
+    // Check for colliders within a small radius around the origin position
+    Collider2D[] colliders = Physics2D.OverlapCircleAll(originPosition, 0.15f, groundLayer);
+    
+    // Ensure there's at least one collider (ground) detected
+    return colliders.Length > 0;
 }
+
 
 private bool CheckWall(Vector2 direction)
 {

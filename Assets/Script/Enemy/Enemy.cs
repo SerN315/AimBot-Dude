@@ -153,7 +153,7 @@ public abstract class Enemy : MonoBehaviour
 
         if (playerStats != null)
         {
-            playerStats.TakeDamage(0); 
+            playerStats.TakeDamage(10); 
         }
     }
 
@@ -183,19 +183,8 @@ public abstract class Enemy : MonoBehaviour
             Die();
             gameManager.EnemyDestroyed();
         }
-    }
-
-    protected virtual IEnumerator ActivateShieldIfNeeded()
-    {
-        yield return null; 
-    }
-
-    protected virtual IEnumerator ChargeAttack()
-    {
-        yield return null; 
-    }
-
-    protected virtual void Die()
+    }  
+     protected virtual void Die()
     {
             isDead = true;
             anim.SetBool("dead", true);
@@ -203,7 +192,6 @@ public abstract class Enemy : MonoBehaviour
             
         
     }
-
     private IEnumerator HandleDeath()
     {
         // Debug.Log("Handling Death");
@@ -249,6 +237,17 @@ private void SpawnCoins(int value)
         }
     }
 }
+    protected virtual IEnumerator ActivateShieldIfNeeded()
+    {
+        yield return null; 
+    }
+
+    protected virtual IEnumerator ChargeAttack()
+    {
+        yield return null; 
+    }
+
+ 
 
 
     public abstract void HandleDetection(Collider2D other);

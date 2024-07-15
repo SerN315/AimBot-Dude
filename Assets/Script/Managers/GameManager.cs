@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     public TMP_Text gameOverText; // Reference to the text component for game over message
     public TMP_Text gameOverDetailsText; // Reference to the text component for additional details
     public PowerUpManager powerUpManager;
+    private CurrencyManager currencyManager;
 
     void Start()
     {
@@ -23,6 +24,7 @@ public class GameManager : MonoBehaviour
         powerUpManager = FindObjectOfType<PowerUpManager>();
         retryButton.gameObject.SetActive(false);
         continueButton.gameObject.SetActive(false);
+        currencyManager = CurrencyManager.Instance;
     }
 
     // Call this method when the player dies
@@ -51,19 +53,12 @@ public class GameManager : MonoBehaviour
         // Check win condition
         if (totalEnemies <= 0)
         {
+            CheckAndDestroyBarriers();
+            powerUpManager.ShowPowerUpUI();
+            currencyManager.SaveCurrencyOnWin();
 
-
-        CheckAndDestroyBarriers();
-        powerUpManager.ShowPowerUpUI();
-        // Save the collected currency to PlayerPrefs at the end of each level
-        int totalMoney = PlayerPrefs.GetInt("TotalMoney", 0) + CurrencyManager.Instance.GetCurrentLevelCurrency();
-        PlayerPrefs.SetInt("TotalMoney", totalMoney);
-        PlayerPrefs.Save();  // Ensure the PlayerPrefs are saved
-
-        Debug.Log("Total money saved: " + totalMoney);
-
-        // Reset collected currency for the new level
-        CurrencyManager.Instance.ResetCurrency();
+            // Reset collected currency for the new level
+            CurrencyManager.Instance.ResetCurrency();
         }
     }
 
@@ -93,7 +88,8 @@ public class GameManager : MonoBehaviour
         movementUI.SetActive(false);
         powerUpManager.ResetPowerUps();
 
-
+        // Save currency on win
+        currencyManager.SaveCurrencyOnWin();
     }
 
     // Retry the level
@@ -107,32 +103,29 @@ public class GameManager : MonoBehaviour
         // Reload the current scene
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         movementUI.SetActive(true);
+        currencyManager.ResetCurrency();
     }
 
     // Proceed to the next level (or restart the current level for simplicity)
-
-public void NextLevel()
-{
-    // Reset time scale
-    Time.timeScale = 1f;
-
-    // Save power-ups before reloading the scene
-    powerUpManager.SaveSelectedPowerUps();
-
-    int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-
-    if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
+    public void NextLevel()
     {
-        SceneManager.LoadScene(nextSceneIndex);
-        movementUI.SetActive(true);
+        // Reset time scale
+        Time.timeScale = 1f;
+
+        // Save power-ups before reloading the scene
+        powerUpManager.SaveSelectedPowerUps();
+        // currencyManager.ResetCurrency();
+        int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
+
+        if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
+        {
+            SceneManager.LoadScene(nextSceneIndex);
+            movementUI.SetActive(true);
+        }
+        else
+        {
+            Debug.LogWarning("No more scenes available after the current one.");
+            PlayerWon();
+        }
     }
-    else
-    {
-        Debug.LogWarning("No more scenes available after the current one.");
-        PlayerWon();
-    }
-}
-
-
-
 }

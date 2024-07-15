@@ -5,6 +5,7 @@ public class CurrencyManager : MonoBehaviour
     public static CurrencyManager Instance { get; private set; }
 
     private int currentLevelCurrency;
+    private int totalMoney;
 
     private void Awake()
     {
@@ -22,6 +23,7 @@ public class CurrencyManager : MonoBehaviour
     public void AddCurrency(int value)
     {
         currentLevelCurrency += value;
+        Debug.Log("Current Level Currency Added: " + value + ", Total: " + currentLevelCurrency);
     }
 
     public int GetCurrentLevelCurrency()
@@ -32,5 +34,24 @@ public class CurrencyManager : MonoBehaviour
     public void ResetCurrency()
     {
         currentLevelCurrency = 0;
+        Debug.Log("Current Level Currency Reset");
+    }
+
+    public void SaveCurrencyOnWin()
+    {
+        Debug.Log("CurrencyManager SaveCurrencyOnWin called");
+        totalMoney += currentLevelCurrency; // Accumulate total money
+        Debug.Log("TotalMoney: " + totalMoney);
+
+        PlayerPrefs.SetInt("TotalMoney", totalMoney);
+        PlayerPrefs.Save();
+        Debug.Log("TotalMoney in PlayerPrefs: " + PlayerPrefs.GetInt("TotalMoney", 0));
+
+        ResetCurrency();
+    }
+
+    public int GetTotalMoney()
+    {
+        return totalMoney;
     }
 }

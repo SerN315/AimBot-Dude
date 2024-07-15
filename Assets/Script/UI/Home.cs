@@ -14,6 +14,8 @@ public class HomeScreenButtonHandler : MonoBehaviour
     public void OnPlayClick()
     {
         ScenesManager.Instance.LoadMapScene(); // Example: LoadHomeScreen method in GameManager
+        Time.timeScale = 1f;
+
     }
         public void OnTitleClick()
     {

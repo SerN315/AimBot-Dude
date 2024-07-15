@@ -7,10 +7,11 @@ public class DisplayTotalMoney : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("DisplayTotalMoney Start called"); // Debug statement
         UpdateTotalMoneyDisplay();
     }
 
-    void UpdateTotalMoneyDisplay()
+    public void UpdateTotalMoneyDisplay()
     {
         int totalMoney = PlayerPrefs.GetInt("TotalMoney", 0);
         totalMoneyText.text = "Total Money: " + totalMoney.ToString();
