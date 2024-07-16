@@ -4,9 +4,11 @@ public class Attack : MonoBehaviour
 {
     public string enemyTag = "Enemy";
     public Transform gunHand;
-    public float fireRate = 5f; // Bullets per second
     public Transform firePoint;
-    public GameObject BulletPrefab;
+    private GameObject bulletPrefab;
+    private float fireRate;
+    private string additionalEffect;
+    private int bulletDamage;
 
     private float fireTimer = 0f;
     private int additionalDamage = 0; // Additional damage from power-ups
@@ -65,11 +67,42 @@ public class Attack : MonoBehaviour
 
     void Shoot()
     {
-        GameObject bullet = Instantiate(BulletPrefab, firePoint.position, firePoint.rotation);
+        if (firePoint == null || bulletPrefab == null)
+        {
+            Debug.LogWarning("Fire point or bullet prefab not assigned.");
+            return;
+        }
+
+        Debug.Log("Shooting from: " + firePoint.position + " with rotation: " + firePoint.rotation);
+        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
         Bullets bulletComponent = bullet.GetComponent<Bullets>();
         if (bulletComponent != null)
         {
-            bulletComponent.SetDamage(additionalDamage);
+            bulletComponent.SetDamage(bulletDamage + additionalDamage);
+            ApplyAdditionalEffect(bulletComponent);
+        }
+    }
+
+    public void SetGunProperties(GameObject newBulletPrefab, float newFireRate, string newAdditionalEffect, int newBulletDamage)
+    {
+        bulletPrefab = newBulletPrefab;
+        fireRate = newFireRate;
+        additionalEffect = newAdditionalEffect;
+        bulletDamage = newBulletDamage;
+    }
+
+    void ApplyAdditionalEffect(Bullets bulletComponent)
+    {
+        // Example of how you might apply additional effects based on the gun's properties
+        switch (additionalEffect)
+        {
+            case "explosive":
+                bulletComponent.MakeExplosive();
+                break;
+            case "piercing":
+                bulletComponent.MakePiercing();
+                break;
+            // Add other effects as needed
         }
     }
 

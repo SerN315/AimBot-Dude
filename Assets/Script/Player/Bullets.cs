@@ -8,7 +8,6 @@ public class Bullets : MonoBehaviour
     private float timer;
     public Rigidbody2D rb;
 
-    // Start is called before the first frame update
     void Awake()
     {
         rb.velocity = transform.right * speed;
@@ -26,7 +25,7 @@ public class Bullets : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D hitInfo)
     {
-        // Ignore collision with objects tagged as "Platform"
+        // Ignore collision with objects tagged as "OneWayPlatform"
         if (hitInfo.CompareTag("OneWayPlatform"))
         {
             Physics2D.IgnoreCollision(hitInfo, GetComponent<Collider2D>());
@@ -60,5 +59,16 @@ public class Bullets : MonoBehaviour
     public void ResetDamage()
     {
         damage = 20;
+    }
+
+    // Example methods for additional effects
+    public void MakeExplosive()
+    {
+        // Implement explosive effect
+    }
+
+    public void MakePiercing()
+    {
+        // Implement piercing effect
     }
 }

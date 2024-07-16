@@ -28,7 +28,7 @@ public class ScenesManager : MonoBehaviour
     public void LoadMapScene()
     {
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        int nextSceneIndex = currentSceneIndex + 1;
+        int nextSceneIndex = currentSceneIndex + 2;
 
         if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
         {

@@ -9,7 +9,7 @@ TagManager:
   - Projectile
   - Breakable
   - Currency
-  - Undefined
+  - Traps
   layers:
   - Default
   - TransparentFX
