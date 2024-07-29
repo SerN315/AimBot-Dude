@@ -24,7 +24,10 @@ public class ScenesManager : MonoBehaviour
     {
         SceneManager.LoadScene(1); // Assuming Home is at build index 1
     }
-
+        public void LoadLoadOut()
+    {
+        SceneManager.LoadScene(2); // Assuming Home is at build index 1
+    }
     public void LoadMapScene()
     {
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;

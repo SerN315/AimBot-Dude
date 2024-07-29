@@ -19,7 +19,7 @@ public class GunSelectionMenu : MonoBehaviour
         for (int i = 0; i < gunButtons.Length; i++)
         {
             int index = i;
-             Image buttonImage = gunButtons[i].GetComponentInChildren<Image>();
+            Image buttonImage = gunButtons[i].GetComponentInChildren<Image>();
             if (buttonImage != null && availableGuns[i].sprite != null)
             {
                 buttonImage.sprite = availableGuns[i].sprite;
@@ -32,7 +32,7 @@ public class GunSelectionMenu : MonoBehaviour
 
         // Load selected gun index from game state manager
         selectedGunIndex = GameStateManager.Instance.SelectedGunIndex;
-        
+
         DisplayGunDetails(selectedGunIndex); // Ensure selected gun details are displayed
     }
 
@@ -41,10 +41,17 @@ public class GunSelectionMenu : MonoBehaviour
         if (index >= 0 && index < availableGuns.Length)
         {
             Gun gun = availableGuns[index];
+
+            // Debug logs to check values
+            Debug.Log($"Displaying details for gun at index {index}");
+            Debug.Log($"Name: {gun.name}");
+            Debug.Log($"Fire Rate: {gun.fireRate}");
+            Debug.Log($"Damage: {gun.bulletDamage}");
+
             gunNameText.text = "Name: " + gun.name;
             fireRateText.text = "Fire Rate: " + gun.fireRate.ToString();
             damageText.text = "Damage: " + gun.bulletDamage;
-            
+
             // Set gun image
             if (gunImage != null && gun.sprite != null)
             {

@@ -9,7 +9,7 @@ public class HomeScreenButtonHandler : MonoBehaviour
     // Assign the button click function in the Inspector
     void Start(){
         PlayBt.onClick.AddListener(OnPlayClick);
-        TitleBt.onClick.AddListener(OnTitleClick);
+        TitleBt.onClick.AddListener(OnLoadOutClick);
     }
     public void OnPlayClick()
     {
@@ -17,8 +17,8 @@ public class HomeScreenButtonHandler : MonoBehaviour
         Time.timeScale = 1f;
 
     }
-        public void OnTitleClick()
+        public void OnLoadOutClick()
     {
-        ScenesManager.Instance.LoadTitleScreen(); // Example: LoadHomeScreen method in GameManager
+        ScenesManager.Instance.LoadLoadOut(); // Example: LoadHomeScreen method in GameManager
     }
 }

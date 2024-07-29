@@ -2181,6 +2181,7 @@ GameObject:
   - component: {fileID: 1142463997}
   - component: {fileID: 1142463996}
   - component: {fileID: 1142463995}
+  - component: {fileID: 1142464000}
   m_Layer: 3
   m_Name: Traps
   m_TagString: Untagged
@@ -2555,6 +2556,20 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &1142464000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1142463993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c8538968c941c04a8ec767e1a89aca6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageAmount: 30
+  damageInterval: 1
 --- !u!4 &1170148596 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 197299644059391157, guid: c6d5a9458b756364da4720992ecf862c, type: 3}
@@ -3915,7 +3930,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1750196136
 Transform:
   m_ObjectHideFlags: 0

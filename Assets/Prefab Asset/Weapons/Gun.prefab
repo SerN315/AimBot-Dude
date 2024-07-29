@@ -99,7 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 853327775764673990, guid: 21dcad66293dafb44a47d9abc5cf02b3, type: 3}
-  name: Basic
+  name: Basic Gun
   fireRate: 5
   additionalEffect: 
   bulletDamage: 20
