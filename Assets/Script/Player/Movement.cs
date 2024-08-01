@@ -17,6 +17,7 @@ public class JoystickMove : MonoBehaviour
     public Transform gunHand;
     [SerializeField]
     private float offset = 1f; // Adjust this value as needed
+    private bool jumpRequested = false;
 
 
     void Start()
@@ -24,12 +25,10 @@ public class JoystickMove : MonoBehaviour
         speed = baseSpeed * speedMultiplier;
         body = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        
-        // Ensure the button is found
+
         if (jumpButton != null)
         {
-            // Add a listener to the button
-            jumpButton.onClick.AddListener(OnJumpButtonClick);
+            jumpButton.onClick.AddListener(() => jumpRequested = true);
         }
         else
         {
@@ -41,6 +40,15 @@ public class JoystickMove : MonoBehaviour
     {
         speed = baseSpeed * speedMultiplier;
         anim.SetBool("Jump", !isGrounded());
+
+        if (jumpRequested)
+        {
+            jumpRequested = false;
+            if (isGrounded())
+            {
+                body.velocity = new Vector2(body.velocity.x, jumpForce);
+            }
+        }
     }
 
     void FixedUpdate()
@@ -128,14 +136,14 @@ else if (isWallOnRight && movementInputX > 0)
         // }
     }
 
-    void OnJumpButtonClick()
-    {
-        Debug.Log("Jump button clicked!");
-        if (isGrounded())
-        {
-            body.velocity = new Vector2(body.velocity.x, jumpForce);
-        }
-    }
+    //void OnJumpButtonClick()
+    //{
+    //    Debug.Log("Jump button clicked!");
+    //    if (isGrounded())
+    //    {
+    //        body.velocity = new Vector2(body.velocity.x, jumpForce);
+    //    }
+    //}
 
 public bool isGrounded()
 {

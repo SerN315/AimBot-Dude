@@ -4,12 +4,11 @@ public class Attack : MonoBehaviour
 {
     public string enemyTag = "Enemy";
     public Transform gunHand;
-    public Transform firePoint;
-    private GameObject bulletPrefab;
-    private float fireRate;
-    private string additionalEffect;
+    public Transform firePoint;    
     private int bulletDamage;
-
+    private GameObject bulletPrefab;
+    private string additionalEffect;
+    private float fireRate;
     private float fireTimer = 0f;
     private int additionalDamage = 0; // Additional damage from power-ups
 
