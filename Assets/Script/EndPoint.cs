@@ -20,7 +20,7 @@ public class EndPoint : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D hitInfo)
     {
-        Debug.Log(hitInfo.tag);
+        //Debug.Log(hitInfo.tag);
         if (hitInfo.gameObject.layer == LayerMask.NameToLayer("Player")) 
         {
             gameManager.NextLevel();

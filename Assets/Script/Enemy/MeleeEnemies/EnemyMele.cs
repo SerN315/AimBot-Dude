@@ -31,6 +31,7 @@ public abstract class Enemy : MonoBehaviour
     public GameObject silverCoinPrefab;
     public GameObject bronzeCoinPrefab;
     public GameObject coinBagPrefab;
+    private int expAmount = 100;
 
     protected virtual void Start()
     {
@@ -43,7 +44,7 @@ public abstract class Enemy : MonoBehaviour
             flashEffect = GetComponent<SimpleHit>();
             if (flashEffect == null)
             {
-                Debug.LogError("FlashEffect is not assigned and SimpleHit component is not found on the player.");
+                //Debug.LogError("FlashEffect is not assigned and SimpleHit component is not found on the player.");
             }
         }
 
@@ -238,7 +239,7 @@ public abstract class Enemy : MonoBehaviour
 
 
         health -= damage;
-        Debug.Log("Enemy took damage: " + damage + ", current health: " + health);
+        //Debug.Log("Enemy took damage: " + damage + ", current health: " + health);
 
         if (health < 50 && health > 0 && !isShieldActive && !isCooldownActive)
         {
@@ -264,13 +265,23 @@ public abstract class Enemy : MonoBehaviour
         // Debug.Log("Handling Death");
         yield return new WaitForSeconds(deathDelay);
         Destroy(gameObject);
+        if (ExpManager.instance != null)
+        {
+            Debug.Log($"Adding {expAmount} EXP to player.");
+            ExpManager.instance.AddExp(expAmount);
+        }
+        else
+        {
+            Debug.LogError("ExpManager instance is null.");
+        }
         int coinValue = Random.Range(5, 101); // Random value between 5 and 100
         SpawnCoins(coinValue);
 
-        
+
     }
 
-private void SpawnCoins(int value)
+
+    private void SpawnCoins(int value)
 {
     while (value > 0)
     {

@@ -119,14 +119,14 @@ public class ShieldEnemy : Enemy
             shieldhitboxCollider.enabled = false;
         }
 
-        Debug.Log("ShieldEnemy initialized.");
+        //Debug.Log("ShieldEnemy initialized.");
     }
 
     protected override IEnumerator ActivateShieldIfNeeded()
     {
         if (!isShieldActive && !anim.GetBool("shield") && !isCooldownActive)
         {
-            Debug.Log("Creating shield...");
+            //Debug.Log("Creating shield...");
 
             yield return StartCoroutine(PlayPreShieldAnimationAndCreateShield());
         }
@@ -165,7 +165,7 @@ public class ShieldEnemy : Enemy
 
         anim.SetBool("shield", false);
         shieldhitboxCollider.enabled = false;
-        Debug.Log("Shield deactivated.");
+        //Debug.Log("Shield deactivated.");
         isShieldActive = false;
 
         StartCoroutine(StartCooldown(cooldownDuration));
@@ -177,11 +177,11 @@ public class ShieldEnemy : Enemy
     private IEnumerator StartCooldown(float cooldown)
     {
         isCooldownActive = true;
-        Debug.Log("Shield cooldown started. Duration: " + cooldown + " seconds.");
+        //Debug.Log("Shield cooldown started. Duration: " + cooldown + " seconds.");
 
         yield return new WaitForSeconds(cooldown);
 
-        Debug.Log("Shield cooldown ended.");
+        //Debug.Log("Shield cooldown ended.");
         isCooldownActive = false;
     }
 
@@ -198,7 +198,7 @@ public class ShieldEnemy : Enemy
         {
             anim.SetBool("run", false);
             anim.SetBool("attack", true);
-            Debug.Log("Player entered detection range of ShieldEnemy");
+            //Debug.Log("Player entered detection range of ShieldEnemy");
         }
     }
 
@@ -207,7 +207,7 @@ public class ShieldEnemy : Enemy
         if (other.CompareTag("Player"))
         {
             StartCoroutine(DisableAttackAnimationAfterDelay());
-            Debug.Log("Player left detection range of ShieldEnemy");
+            //Debug.Log("Player left detection range of ShieldEnemy");
         }
     }
 

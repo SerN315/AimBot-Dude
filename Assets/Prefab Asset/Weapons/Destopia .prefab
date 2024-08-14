@@ -131,7 +131,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 7816458157822024162, guid: a3de6eaf2074b744a82a900ab62edf81, type: 3}
   name: Destopia Flare
-  fireRate: 6
+  fireRate: 1
   additionalEffect: 
   bulletDamage: 25
   sprite: {fileID: 21300000, guid: f469ac8a72854e946a153f5881ffe5da, type: 3}

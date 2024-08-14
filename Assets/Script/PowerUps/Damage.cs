@@ -7,7 +7,7 @@ public class DamagePowerUp : PowerUpsEffect
 
     public override void ApplyEffect(GameObject player)
     {
-        Debug.Log("Applying damage increase: " + DamageAmount);
+        //Debug.Log("Applying damage increase: " + DamageAmount);
         Attack playerAttack = player.GetComponent<Attack>();
         if (playerAttack != null)
         {

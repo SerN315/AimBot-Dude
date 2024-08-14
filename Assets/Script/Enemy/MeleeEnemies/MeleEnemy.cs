@@ -47,7 +47,7 @@ public class MeleeEnemy : Enemy
         {
             StartCoroutine(ChargeAttack());
             anim.SetBool("run", false);
-            Debug.Log("Player entered detection range of MeleeEnemy");
+            //Debug.Log("Player entered detection range of MeleeEnemy");
         }
     }
 
@@ -58,7 +58,7 @@ public class MeleeEnemy : Enemy
    
             StartCoroutine(DisableAttackAnimationAfterDelay());
             anim.SetBool("attack", false);
-            Debug.Log("Player left detection range of MeleeEnemy");
+            //Debug.Log("Player left detection range of MeleeEnemy");
         }
     }
 

@@ -6,7 +6,7 @@ public class MaxHealthPowerUp : PowerUpsEffect
 
     public override void ApplyEffect(GameObject player)
     {
-        Debug.Log("Applying max health increase: " + maxHealthIncrease);
+        //Debug.Log("Applying max health increase: " + maxHealthIncrease);
         PlayerStats playerHealth = player.GetComponent<PlayerStats>();
         if (playerHealth != null)
         {

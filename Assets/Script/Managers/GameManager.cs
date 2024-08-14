@@ -39,7 +39,7 @@ void Start()
 
     if (attackScript == null)
     {
-        Debug.LogWarning("Attack script not found on Player GameObject.");
+        //Debug.LogWarning("Attack script not found on Player GameObject.");
         return;
     }
 
@@ -68,13 +68,13 @@ void Start()
     public void EnemyDestroyed()
     {
         totalEnemies--;
-        Debug.Log("Number of enemies remaining: " + totalEnemies);
+        //Debug.Log("Number of enemies remaining: " + totalEnemies);
 
         // Check win condition
         if (totalEnemies <= 0)
         {
             CheckAndDestroyBarriers();
-            powerUpManager.ShowPowerUpUI();
+            //powerUpManager.ShowPowerUpUI();
             currencyManager.SaveCurrencyOnWin();
 
             // Reset collected currency for the new level
@@ -85,7 +85,7 @@ void Start()
     private void CheckAndDestroyBarriers()
     {
         GameObject[] barriers = GameObject.FindGameObjectsWithTag("Finish");
-        Debug.Log("Number of barriers found: " + barriers.Length); // Log number of barriers found
+        //Debug.Log("Number of barriers found: " + barriers.Length); // Log number of barriers found
 
         foreach (GameObject barrier in barriers)
         {
@@ -121,7 +121,8 @@ void Start()
         // Reset power-ups
         powerUpManager.ResetPowerUps();
         // Reload the current scene
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene(3); // Assuming Home is at build index 1
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         movementUI.SetActive(true);
         currencyManager.ResetCurrency();
     }
@@ -136,16 +137,17 @@ void Start()
         powerUpManager.SaveSelectedPowerUps();
         // currencyManager.ResetCurrency();
         int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
-
+        PlayerStats player = FindObjectOfType<PlayerStats>();
         if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
         {
             SceneManager.LoadScene(nextSceneIndex);
+            GameData.instance.SaveData(player.currentlevel, player.currentexp, player.maxExp);
             movementUI.SetActive(true);
         }
         else
         {
             
-            Debug.LogWarning("No more scenes available after the current one.");
+            //Debug.LogWarning("No more scenes available after the current one.");
             PlayerWon();
         }
     }
@@ -164,7 +166,7 @@ public void EquipGun(int index)
 
         // Instantiate new gun prefab from availableGuns array
         currentGun = Instantiate(availableGuns[index], gunHand.position, gunHand.rotation, gunHand);
-        Debug.Log("Equipping gun: " + availableGuns[index].name);
+        //Debug.Log("Equipping gun: " + availableGuns[index].name);
 
     // Set position relative to gunHand with specified offset
     Vector3 offset = new Vector3(0.135f, 0.033f, 0f); // Adjust as needed
@@ -181,11 +183,13 @@ public void EquipGun(int index)
         // Assign gunPoint as firePoint in Attack script
         attackScript.firePoint = gunPoint;
         attackScript.SetGunProperties(currentGun.bulletPrefab, currentGun.fireRate, currentGun.additionalEffect, currentGun.bulletDamage); // Set gun properties
-        Debug.Log("Assigned firePoint: " + gunPoint.position);
+        //Debug.Log("Assigned firePoint: " + gunPoint.position);
     }
     else
     {
-        Debug.LogWarning("gunPoint not found on the instantiated gun prefab.");
+        //Debug.LogWarning("gunPoint not found on the instantiated gun prefab.");
     }
 }
 }
+ 
+

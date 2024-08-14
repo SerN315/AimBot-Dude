@@ -7,7 +7,7 @@ public class HealthRegenPowerUp : PowerUpsEffect
 
     public override void ApplyEffect(GameObject player)
     {
-        Debug.Log("Applying healing: " + healthAmount);
+        //Debug.Log("Applying healing: " + healthAmount);
         PlayerStats playerHealth = player.GetComponent<PlayerStats>();
         if (playerHealth != null)
         {

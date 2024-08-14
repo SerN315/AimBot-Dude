@@ -12,19 +12,17 @@ public abstract class RangeEnemy : MonoBehaviour
     private GameManager gameManager;
     private SimpleHit flashEffect;
     public float patrolPointSpacing = 8f;
-    public int numberOfPatrolPoints = 3;
+    private int numberOfPatrolPoints = 2;
     public LayerMask groundLayer;
     public float ledgeCheckDistance = 1f;
     public float lineOfSight = 5f;
     public float range;
-    private Transform player;
+    public Transform player;
     protected bool facingRight = true;
     protected Rigidbody2D rb;
     protected Animator anim;
     protected Transform currentPatrolPoint;
     protected bool isRunning = true;
-    protected bool isShieldActive = false;
-    protected bool isCooldownActive = false;
     protected float cooldownDuration = 2f;
     private float deathDelay = 0.2f;
     private bool isDead = false;
@@ -32,13 +30,14 @@ public abstract class RangeEnemy : MonoBehaviour
     public GameObject silverCoinPrefab;
     public GameObject bronzeCoinPrefab;
     public GameObject coinBagPrefab;
+    private int expAmount = 100;
 
 
-    private bool isWaitingAtLedge = false;
+    public bool isWaitingAtLedge = false;
 
     // Enemy states
-    private enum EnemyState { Patrolling, Chasing }
-    private EnemyState currentState = EnemyState.Patrolling;
+    public enum EnemyState { Patrolling, Chasing }
+    public EnemyState currentState = EnemyState.Patrolling;
 
     protected virtual void Start()
     {
@@ -52,7 +51,7 @@ public abstract class RangeEnemy : MonoBehaviour
             flashEffect = GetComponent<SimpleHit>();
             if (flashEffect == null)
             {
-                Debug.LogError("FlashEffect is not assigned and SimpleHit component is not found on the player.");
+                //Debug.LogError("FlashEffect is not assigned and SimpleHit component is not found on the player.");
             }
         }
 
@@ -132,7 +131,7 @@ public abstract class RangeEnemy : MonoBehaviour
         }
     }
 
-    private void FaceDirection(float directionX)
+    public virtual void FaceDirection(float directionX)
     {
         if (directionX > 0)
         {
@@ -144,7 +143,7 @@ public abstract class RangeEnemy : MonoBehaviour
         }
     }
 
-    private IEnumerator WaitAtLedge()
+    public IEnumerator WaitAtLedge()
     {
         isWaitingAtLedge = true;
 
@@ -217,26 +216,13 @@ public abstract class RangeEnemy : MonoBehaviour
 
     protected virtual void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.collider.CompareTag("Projectile"))
-        {
-            HandleProjectileCollision(collision);
-        }
-        else if (collision.collider.CompareTag("Player"))
+
+        if (collision.collider.CompareTag("Player"))
         {
             HandlePlayerCollision(collision);
         }
     }
 
-    protected virtual void HandleProjectileCollision(Collision2D collision)
-    {
-        // Debug.Log("Projectile touched the enemy");
-        Destroy(collision.gameObject);
-
-        if (!isShieldActive)
-        {
-            TakeDamage(10);
-        }
-    }
 
     protected virtual void HandlePlayerCollision(Collision2D collision)
     {
@@ -251,11 +237,6 @@ public abstract class RangeEnemy : MonoBehaviour
 
     public virtual void TakeDamage(int damage)
     {
-        if (isShieldActive)
-        {
-            // Debug.Log("Shield is active. No damage taken.");
-            return;
-        }
         if (flashEffect != null)
         {
             flashEffect.Flash();
@@ -263,7 +244,7 @@ public abstract class RangeEnemy : MonoBehaviour
 
 
         health -= damage;
-        Debug.Log("Enemy took damage: " + damage + ", current health: " + health);
+        //Debug.Log("Enemy took damage: " + damage + ", current health: " + health);
 
 
         if (health <= 0 && !isDead)
@@ -282,14 +263,21 @@ public abstract class RangeEnemy : MonoBehaviour
     }
     private IEnumerator HandleDeath()
     {
-        // Debug.Log("Handling Death");
         yield return new WaitForSeconds(deathDelay);
         Destroy(gameObject);
+        if (ExpManager.instance != null)
+        {
+            Debug.Log($"Adding {expAmount} EXP to player.");
+            ExpManager.instance.AddExp(expAmount);
+        }
+        else
+        {
+            Debug.LogError("ExpManager instance is null.");
+        }
         int coinValue = Random.Range(5, 101); // Random value between 5 and 100
         SpawnCoins(coinValue);
-
-
     }
+
 
     private void SpawnCoins(int value)
     {

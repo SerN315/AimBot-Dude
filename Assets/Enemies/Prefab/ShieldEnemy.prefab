@@ -267,6 +267,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   ledgeCheckDistance: 1
+  lineOfSight: 5
   coinPrefab: {fileID: 1306307913785035900, guid: 1372516f3ac2dd147a82597460ee59d1, type: 3}
   silverCoinPrefab: {fileID: 6657591938719990784, guid: 90a9597c565201147a21db0a8d33aca0, type: 3}
   bronzeCoinPrefab: {fileID: 9147394789131106719, guid: f9b698899e61a4744bc7c06878b75710, type: 3}
@@ -447,6 +448,6 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.025683938, y: -0.25372648}
-  m_Size: {x: 0.61735624, y: 0.61735624}
+  m_Offset: {x: -0.030247007, y: -0.041404605}
+  m_Size: {x: 0.6196493, y: 0.18162504}
   m_Direction: 1

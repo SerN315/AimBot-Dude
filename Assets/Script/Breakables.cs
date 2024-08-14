@@ -20,7 +20,7 @@ public class BreakableObject : MonoBehaviour
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
-        Debug.Log("BreakableObject took damage: " + damage + ", current health: " + currentHealth);
+        //Debug.Log("BreakableObject took damage: " + damage + ", current health: " + currentHealth);
 
         if (currentHealth <= 50)
         {

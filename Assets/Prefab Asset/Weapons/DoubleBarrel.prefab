@@ -100,7 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 175394795593167266, guid: fffb525bdfc53e245b201962a906efa5, type: 3}
   name: Double Barrel
-  fireRate: 3
+  fireRate: 0.5
   additionalEffect: 
   bulletDamage: 15
   sprite: {fileID: 21300000, guid: b20e22437b4ad3a40a762fa1ec785700, type: 3}

@@ -28,7 +28,7 @@ public class ProjectileNp : MonoBehaviour
     // Update is called once per frame
     void OnTriggerEnter2D(Collider2D hitInfo)
     {
-        Debug.Log(hitInfo.tag);
+        //Debug.Log(hitInfo.tag);
         if (hitInfo.gameObject.layer == LayerMask.NameToLayer("Player")) 
         {
             PlayerStats enemy = hitInfo.GetComponent<PlayerStats>();

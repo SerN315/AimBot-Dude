@@ -133,5 +133,5 @@ MonoBehaviour:
   name: Bubble Gun
   fireRate: 2
   additionalEffect: 
-  bulletDamage: 50
+  bulletDamage: 30
   sprite: {fileID: 21300000, guid: 53bda27c67f33a74d933390b5f537b72, type: 3}

@@ -164,7 +164,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 25
   damage: 15
+  explosionDamage: 30
   rb: {fileID: 6261561586581547628}
+  isExplosive: 0
+  isPiercing: 0
+  explosionRadius: 2
+  explosionPrefab: {fileID: 1793785802080950781, guid: a005f17000608ca49beb59a05e853184, type: 3}
 --- !u!1 &2207379556816635505
 GameObject:
   m_ObjectHideFlags: 0

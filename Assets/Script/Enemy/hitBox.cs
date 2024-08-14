@@ -62,7 +62,7 @@ public class Hitbox : MonoBehaviour
     {
         if (other.CompareTag("Player") && !hasHitPlayer)
         {
-            Debug.Log("Player in hitbox range");
+            //Debug.Log("Player in hitbox range");
 
             // Get the specific enemy type from the parent GameObject
             enemy = GetComponentInParent<Enemy>(); // Adjust as per your structure
@@ -98,7 +98,7 @@ public class Hitbox : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log("Player left hitbox range");
+            //Debug.Log("Player left hitbox range");
             hasHitPlayer = false;
         }
     }

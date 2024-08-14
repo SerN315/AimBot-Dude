@@ -23,7 +23,7 @@ public class TankEnemy : Enemy
                 anim.SetBool("run", false);
                 anim.SetBool("attack", true);
                 hasAttack = true;
-                Debug.Log("Player entered detection range of TankEnemy");
+                //Debug.Log("Player entered detection range of TankEnemy");
             }
         }
     }
@@ -36,7 +36,7 @@ public class TankEnemy : Enemy
             {
                 StartCoroutine(DisableAttackAnimationAfterDelay(delayBeforeNextAttack));
                 hasAttack = false;
-                Debug.Log("Player left detection range of TankEnemy");
+                //Debug.Log("Player left detection range of TankEnemy");
             }
         }
     }
@@ -48,7 +48,7 @@ public class TankEnemy : Enemy
         yield return new WaitForSeconds(delay);
         anim.SetBool("run", true); // Resume running animation
         hasAttack = false; // Allow the tank to attack again after the delay
-        Debug.Log("TankEnemy can attack again");
+        //Debug.Log("TankEnemy can attack again");
     }
 
 }

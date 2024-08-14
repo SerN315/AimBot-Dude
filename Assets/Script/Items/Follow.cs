@@ -20,7 +20,7 @@ public class Follow : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Player object not found!");
+            //Debug.LogWarning("Player object not found!");
         }
     }
 

@@ -100,9 +100,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletPrefab: {fileID: 4226662057841683463, guid: e6117dd681e032a459097c75ad2bb7ea, type: 3}
   name: Plasma Gun
-  fireRate: 3
+  fireRate: 1.5
   additionalEffect: 
-  bulletDamage: 35
+  bulletDamage: 20
   sprite: {fileID: 21300000, guid: 19372d8c73ec32f4a8de0286ecc33e56, type: 3}
 --- !u!1 &8431613966653538018
 GameObject:

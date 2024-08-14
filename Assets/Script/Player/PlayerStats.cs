@@ -1,5 +1,6 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerStats : MonoBehaviour
 {
@@ -11,14 +12,29 @@ public class PlayerStats : MonoBehaviour
     private GameManager gameManager;
     public GameObject gunHand;
     private SimpleHit gunHandFlashEffect;
+    [SerializeField] private Text exptext;
+    [SerializeField] private Sprite Csprite;
+    [SerializeField] private Image expprogress;
+    [SerializeField] private Image Cavatar;
     [SerializeField] private float deathDelay = 1f;
     private bool isDead = false;
-    [SerializeField] private int currentHealth;
+    private int currentHealth;
+    public int currentexp;
+    public int currentlevel;
+    public int maxExp;
+    public PowerUpManager powerUpManager;
 
     void Start()
     {
+        Csprite = GetComponent<SpriteRenderer>().sprite;
+        exptext = GameObject.Find("exptext")?.GetComponent<Text>();
+        expprogress = GameObject.Find("Exp")?.GetComponent<Image>();
+        Cavatar = GameObject.Find("CharacterAva")?.GetComponent<Image>();
         currentHealth = health;
-    Debug.Log("Initial health set to: " + currentHealth);
+        currentlevel = GameData.instance.currentLevel;
+        currentexp = GameData.instance.currentExp;
+        maxExp = GameData.instance.maxExp;
+        powerUpManager = FindObjectOfType<PowerUpManager>();
         gameManager = FindObjectOfType<GameManager>();
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
@@ -26,35 +42,23 @@ public class PlayerStats : MonoBehaviour
         if (flashEffect == null)
         {
             flashEffect = GetComponent<SimpleHit>();
-            if (flashEffect == null)
-            {
-                Debug.LogError("FlashEffect is not assigned and SimpleHit component is not found on the player.");
-            }
         }
 
         if (gunHand != null)
         {
             gunHandFlashEffect = gunHand.GetComponent<SimpleHit>();
-            if (gunHandFlashEffect == null)
-            {
-                Debug.LogError("SimpleHit component is not found on the gunHand.");
-            }
         }
-        else
-        {
-            Debug.LogError("GunHand is not assigned.");
-        }
+
+        UpdateExpUI(); 
     }
 
     void Update()
     {
-        // Update logic if necessary
+        // Update logic 
     }
 
     public void TakeDamage(int damage)
     {
-        Debug.Log("Player takes damage: " + damage); // Log damage taken
-
         if (flashEffect != null)
         {
             flashEffect.Flash();
@@ -75,7 +79,6 @@ public class PlayerStats : MonoBehaviour
             {
                 gunHand.SetActive(false);
             }
-            Debug.Log("Player health reached zero or below.");
             StartCoroutine(HandlePlayerDeath());
         }
     }
@@ -94,21 +97,85 @@ public class PlayerStats : MonoBehaviour
 
     public void RecoverHealth(int amount)
     {
-    Debug.Log("Current health before recovery: " + currentHealth);
-    currentHealth = Mathf.Min(currentHealth + amount, health);
-    Debug.Log("Recovered health by " + amount + ". Current health after recovery: " + currentHealth);
+        currentHealth = Mathf.Min(currentHealth + amount, health);
     }
+
     public void IncreaseMaxHealth(int amount)
-{
-    health += amount;
-    currentHealth = Mathf.Min(currentHealth + amount, health);
-    Debug.Log("Increased max health by " + amount + ". New max health: " + health + ", Current health: " + currentHealth);
-    // Update health UI or other logic
-}
+    {
+        health += amount;
+        currentHealth = Mathf.Min(currentHealth + amount, health);
+    }
 
     public void ResetHealth()
     {
         currentHealth = health;
-        // Reset other health-related states
+    }
+
+    private void OnEnable()
+    {
+        if (ExpManager.instance != null)
+        {
+            ExpManager.instance.ExpOnChange += HandleExpChange;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (ExpManager.instance != null)
+        {
+            ExpManager.instance.ExpOnChange -= HandleExpChange;
+        }
+    }
+
+    private void HandleExpChange(int newExp)
+    {
+        Debug.Log("Exp changed by: " + newExp);
+        currentexp += newExp;
+        if (currentexp >= maxExp)
+        {
+            LevelUp();
+        }
+        else
+        {
+            UpdateExpUI(); // Update UI after exp change
+        }
+    }
+
+    private void LevelUp()
+    {
+        powerUpManager.ShowPowerUpUI();
+        currentlevel++;
+        currentexp = 0;
+        maxExp += 100;
+        GameData.instance.SaveData(currentlevel, currentexp, maxExp);
+        UpdateExpUI(); // Update UI after level up
+    }
+
+    private void UpdateExpUI()
+    {
+        // Update the level text
+        exptext.text = "Lv: " + currentlevel;
+
+        // Update the experience progress bar
+        StartCoroutine(UpdateExpProgressBar());
+
+        Cavatar.sprite = Csprite; 
+    }
+    private IEnumerator UpdateExpProgressBar()
+    {
+        float elapsedTime = 0f;
+        float duration = 0.5f; // Duration of the fill effect
+        float startFill = expprogress.fillAmount;
+        float targetFill = (float)currentexp / maxExp;
+
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            expprogress.fillAmount = Mathf.Lerp(startFill, targetFill, elapsedTime / duration);
+            yield return null;
+        }
+
+        // Ensure the fill amount reaches the target value
+        expprogress.fillAmount = targetFill;
     }
 }

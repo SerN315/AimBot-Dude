@@ -16,7 +16,7 @@ public class CameraFollow : MonoBehaviour
     {
         if (target == null)
         {
-            Debug.LogWarning("Target not set for CameraFollow.");
+            //Debug.LogWarning("Target not set for CameraFollow.");
         }
 
         // Set initial target offset

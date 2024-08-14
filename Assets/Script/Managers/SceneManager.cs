@@ -35,11 +35,13 @@ public class ScenesManager : MonoBehaviour
 
         if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
         {
+            
             SceneManager.LoadScene(nextSceneIndex);
+            GameData.instance.ResetData();
         }
         else
         {
-            Debug.LogWarning("No next scene available in build hierarchy.");
+            //Debug.LogWarning("No next scene available in build hierarchy.");
         }
     }
 }
